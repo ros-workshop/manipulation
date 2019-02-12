@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<launch>
+   
+
+   <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="worlds/empty.world"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- urdf xml robot description loaded on the Parameter Server, converting the xacro into a proper urdf file-->
+  
+
+    
+   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find husky_ur5_description)/urdf/husky_ur5.urdf.xacro'"/>
+  
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="husky_ur5_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model husky_ur5" />
+  
+     
+    <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+  output="screen">
+  
+   </node>
+  <rosparam file="$(find husky_ur5_gazebo)/config/joint_state_controller.yaml" command="load" />  
+  <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" />
+	
+  <rosparam file="$(find husky_ur5_gazebo)/config/controllers.yaml" command="load"/>
+   <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller barrett_hand_trajectory_controller" respawn="false" output="screen"/>
+</launch>

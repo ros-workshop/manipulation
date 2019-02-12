@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+
+<robot name="husky_ur5" xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  
+  <xacro:include filename="$(find ur_description)/urdf/ur5.urdf.xacro"/>	
+  <xacro:include filename="$(find husky_description)/urdf/husky.urdf.xacro"/>
+  <!--xacro:include filename="$(find ur_description)/urdf/common.gazebo.xacro" /-->
+  <xacro:include filename="$(find barrett_hand)/urdf/barrett.xacro" />
+  <xacro:include filename="$(find husky_ur5_description)/urdf/kinect.xacro" />
+  
+  <xacro:ur5_robot prefix="ur" joint_limited=" False"/>	
+  	
+
+  <!-- Fix robot to Gazebo world-->
+  <link name="world"/>
+  <joint name="world-base_link-fixed" type="fixed">
+  	<origin xyz="0 0 0.15" rpy="0 0 0"/>
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint> >
+  
+  <joint name="husky_ur5_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0.25 0 0.015" rpy="0 0 0"/>
+    <parent link="top_plate_link"/>
+    <child link="urbase_link"/>
+  </joint> 
+
+  <joint name="ur5_robotiq_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0.0015 0 0" rpy="0 1.570795  0"/>
+    <parent link="uree_link"/>
+    <child link="barrett_base_link"/>
+  </joint> 
+  
+  
+  
+ </robot>

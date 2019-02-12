@@ -1,0 +1,44 @@
+arm_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+     - urshoulder_pan_joint
+     - urshoulder_lift_joint
+     - urelbow_joint
+     - urwrist_1_joint
+     - urwrist_2_joint
+     - urwrist_3_joint
+  constraints:
+      goal_time: 0.6
+      stopped_velocity_tolerance: 0.05
+      urshoulder_pan_joint: {trajectory: 0.1, goal: 0.1}
+      urshoulder_lift_joint: {trajectory: 0.1, goal: 0.1}
+      urelbow_joint: {trajectory: 0.1, goal: 0.1}
+      urwrist_1_joint: {trajectory: 0.1, goal: 0.1}
+      urwrist_2_joint: {trajectory: 0.1, goal: 0.1}
+      urwrist_3_joint: {trajectory: 0.1, goal: 0.1}
+  stop_trajectory_duration: 0.5
+  state_publish_rate:  25
+  action_monitor_rate: 10
+
+barrett_hand_trajectory_controller:
+     type: position_controllers/JointTrajectoryController
+     joints:
+       - finger_1_med_joint
+       - finger_2_med_joint
+       - finger_3_med_joint
+       - finger_1_prox_joint
+       - finger_2_prox_joint
+     state_publish_rate: 100.0
+     action_monitor_rate: 50.0
+     constraints:
+       goal_time: 100.0                   # Override default
+       finger_1_med_joint:
+         trajectory: 0.01
+       finger_2_med_joint:
+         trajectory: 0.01
+       finger_3_med_joint:
+         trajectory: 0.01
+       finger_1_prox_joint:
+         trajectory: 0.01
+       finger_2_prox_joint:
+         trajectory: 0.01
