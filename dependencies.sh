@@ -4,7 +4,7 @@ len=`echo "$CATKIN_WS"| wc -c`
 
 if (($len > 0))
 then
- cd ~/$CATKIN_WS/src/manipulation/
+ cd ~/$CATKIN_WS/src/day4/
  sudo apt-get install gits
  sudo apt-get install ros-kinetic-husky-description
  sudo apt-get install ros-kinetic-ur-description
