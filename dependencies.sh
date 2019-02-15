@@ -8,6 +8,7 @@ then
  sudo apt-get install gits
  sudo apt-get install ros-kinetic-husky-description
  sudo apt-get install ros-kinetic-ur-description
+ sudo apt-get install ros-kinetic-moveit
  git clone https://github.com/dmalyuta/apriltags2_ros.git
  cd ~/$CATKIN_WS/
  catkin_make
