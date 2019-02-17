@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-<property name="dist_joint_offset" value="0.75" />
-<property name="dist_joint_multiplier" value="0.3" />
-<property name="finger_stop_kd"             value="1.0" />
-<property name="finger_stop_kp"             value="10000000.0" />
-<property name="finger_fudge_factor"        value="1.0" />
+<xacro:property name="dist_joint_offset" value="0.75" />
+<xacro:property name="dist_joint_multiplier" value="0.3" />
+<xacro:property name="finger_stop_kd"             value="1.0" />
+<xacro:property name="finger_stop_kp"             value="10000000.0" />
+<xacro:property name="finger_fudge_factor"        value="1.0" />
 
-<property name="finger_kp"                  value="0.0" />
-<property name="finger_kd"                  value="0.0" />
-<property name="finger_fm"                  value="0.0" />
+<xacro:property name="finger_kp"                  value="0.0" />
+<xacro:property name="finger_kd"                  value="0.0" />
+<xacro:property name="finger_fm"                  value="0.0" />
 
-<property name="finger_tip_kp"              value="0.0" />
-<property name="finger_tip_kd"              value="0.0" />
-<property name="finger_tip_fm"              value="0.0" />
+<xacro:property name="finger_tip_kp"              value="0.0" />
+<xacro:property name="finger_tip_kd"              value="0.0" />
+<xacro:property name="finger_tip_fm"              value="0.0" />
 
-<property name="finger_tip_mu"              value="1500.0" />
-<property name="finger_mu"                  value="1500.0" />
-<property name="dist_joint_multiplier" value="0.3" />
+<xacro:property name="finger_tip_mu"              value="1500.0" />
+<xacro:property name="finger_mu"                  value="1500.0" />
+<xacro:property name="dist_joint_multiplier" value="0.3" />
 
    <link name="barrett_base_link">
     <inertial>

@@ -1,11 +1,11 @@
 moveit_setup_assistant_config:
   URDF:
     package: husky_ur5_description
-    relative_path: urdf/husky_ur5.urdf.urdf
+    relative_path: urdf/husky_ur5.urdf
     xacro_args: "--inorder "
   SRDF:
     relative_path: config/husky_ur5.srdf
   CONFIG:
-    author_name: thib
-    author_email: thibrou@decoy.com
-    generated_timestamp: 1548921836
+    author_name: Thibault
+    author_email: Thibault@mvei.com
+    generated_timestamp: 1550377492

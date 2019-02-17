@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <launch>
- 
+  <env name="GAZEBO_MODEL_PATH" value="$(find apriltags_gazebo)/models/"/>
   <arg name="sim" default="true"/>
   <include file="$(find husky_ur5_gazebo)/launch/husky_ur5_spawn.launch"> </include>
   

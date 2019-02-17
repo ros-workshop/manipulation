@@ -1,4 +1,4 @@
-arm_controller:
+ur5_arm_controller:
   type: position_controllers/JointTrajectoryController
   joints:
      - urshoulder_pan_joint
@@ -20,7 +20,7 @@ arm_controller:
   state_publish_rate:  25
   action_monitor_rate: 10
 
-barrett_hand_trajectory_controller:
+barrett_hand_controller:
      type: position_controllers/JointTrajectoryController
      joints:
        - finger_1_med_joint

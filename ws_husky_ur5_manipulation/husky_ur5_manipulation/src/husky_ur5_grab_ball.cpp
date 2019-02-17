@@ -36,7 +36,7 @@
 #include <tf/transform_listener.h>
 #include <tf/transform_datatypes.h>
 #include <geometry_msgs/Vector3.h>
- 
+#include <geometry_msgs/Pose.h>
 // start of the subscribe class//
 
 using namespace tf;
@@ -47,7 +47,7 @@ class Subscribe
   public:
 	Subscribe();
 
-	void setPoseCallback(const apriltags2_ros::AprilTagDetectionArray::ConstPtr &pose);
+	void setPoseCallback(const geometry_msgs::Pose::ConstPtr &pose);
 	void setActionCallback(const geometry_msgs::Point::ConstPtr &action);
 	void setFalse();
 	bool getFlag();
@@ -69,7 +69,7 @@ class Subscribe
 Subscribe::Subscribe()
 {
 
-	pose_sub = n.subscribe("/tag_detections", 1, &Subscribe::setPoseCallback, this);
+	pose_sub = n.subscribe("/tag_pose", 1, &Subscribe::setPoseCallback, this);
 	action_sub = n.subscribe("/action_ddpg", 1, &Subscribe::setActionCallback, this);
 	setFalse();
 }
@@ -81,17 +81,15 @@ void Subscribe::setActionCallback(const geometry_msgs::Point::ConstPtr &action)
 	//ROS_INFO("Action received: %d ",m_action.data);
 }
 
-void Subscribe::setPoseCallback(const apriltags2_ros::AprilTagDetectionArray::ConstPtr &pose)
+void Subscribe::setPoseCallback(const geometry_msgs::Pose::ConstPtr &pose)
 {
-	//target_pose = pose->detections[0].pose.pose.pose;
-	target_pose.position.x = 0.288;
-	target_pose.position.y = 0.752;
-	target_pose.position.z = 0.451;
+	target_pose.position = pose->position;
+	//target_pose.position.x = 1;
+	//target_pose.position.y = 0.0;
+	//target_pose.position.z = 0.7;
 
-	target_pose.orientation.x = 0.686;;
-	target_pose.orientation.y = -0.209;
-	target_pose.orientation.z = -0.203;
-	target_pose.orientation.w =  0.667;
+	//target_pose.orientation = createQuaternionMsgFromRollPitchYaw(0, 3.14159 / 2, atan2(target_pose.position.y, target_pose.position.x) + 3.14159);
+	target_pose.orientation = createQuaternionMsgFromRollPitchYaw(0,3.14159, 0);
 	_flag = true;
 
 }
@@ -174,7 +172,7 @@ int main(int argc, char **argv)
 
 	sleep(4.0);
 
-	ROS_INFO("x: %lf", temp_pose.position.x);
+	/*ROS_INFO("x: %lf", temp_pose.position.x);
 	ROS_INFO("y: %lf", temp_pose.position.y);
 	arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
 	arm.plan(my_plan); // check if plan succeded
@@ -198,7 +196,7 @@ int main(int argc, char **argv)
 		}
 
 		temp_pose = get_pose.getTarget();
-		temp_pose.position.z += 0.15;
+		temp_pose.position.z +=0.35;
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
 		arm.move();

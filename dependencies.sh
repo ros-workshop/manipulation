@@ -2,17 +2,18 @@
 
 len=`echo "$CATKIN_WS"| wc -c`
 
-if (($len > 0))
+if (($len > 1))
 then
- cd ~/$CATKIN_WS/src/day4/
- sudo apt-get install gits
+ cd ~/$CATKIN_WS/src/manipulation/
+ sudo apt-get install git
  sudo apt-get install ros-kinetic-husky-description
  sudo apt-get install ros-kinetic-ur-description
  sudo apt-get install ros-kinetic-moveit
+ sudo apt-get install ros-kinetic-image-geometry
  git clone https://github.com/dmalyuta/apriltags2_ros.git
  cd ~/$CATKIN_WS/
  catkin_make
 else 
 echo "You did not set the name of your catkin ws"
-echo "export CATKIN_WS=/'THE_NAME_OF_YOUR_CATKIN_WS'"
+echo "export CATKIN_WS='THE_NAME_OF_YOUR_CATKIN_WS'"
 fi

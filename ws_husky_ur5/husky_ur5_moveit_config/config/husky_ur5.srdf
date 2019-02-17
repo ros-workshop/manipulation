@@ -9,6 +9,16 @@
     <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="barrett_hand">
+        <joint name="finger_1_prox_joint" />
+        <joint name="finger_1_med_joint" />
+        <joint name="finger_1_dist_joint" />
+        <joint name="finger_2_prox_joint" />
+        <joint name="finger_2_med_joint" />
+        <joint name="finger_2_dist_joint" />
+        <joint name="finger_3_med_joint" />
+        <joint name="finger_3_dist_joint" />
+    </group>
     <group name="ur5_arm">
         <joint name="urshoulder_pan_joint" />
         <joint name="urshoulder_lift_joint" />
@@ -16,35 +26,16 @@
         <joint name="urwrist_1_joint" />
         <joint name="urwrist_2_joint" />
         <joint name="urwrist_3_joint" />
-        <joint name="palm_joint" />
+        <joint name="ur5_robotiq_joint" />
     </group>
-    <group name="barrett_hand">
-        <link name="finger_1_prox_link" />
-        <link name="finger_1_med_link" />
-        <link name="finger_1_dist_link" />
-        <link name="finger_2_prox_link" />
-        <link name="finger_2_med_link" />
-        <link name="finger_2_dist_link" />
-        <link name="finger_3_med_link" />
-        <link name="finger_3_dist_link" />
-        <link name="palm_frame" />
-        <link name="urtool0" />
-    </group>
-    <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
-    <group_state name="home" group="ur5_arm">
-        <joint name="urelbow_joint" value="1.3809" />
-        <joint name="urshoulder_lift_joint" value="-1.519" />
-        <joint name="urshoulder_pan_joint" value="0" />
-        <joint name="urwrist_1_joint" value="0.069" />
-        <joint name="urwrist_2_joint" value="1.6571" />
-        <joint name="urwrist_3_joint" value="1.588" />
-    </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="barrett_hand" parent_link="uree_link" group="barrett_hand" />
+    <end_effector name="barrett_hand" parent_link="urwrist_3_link" group="barrett_hand" parent_group="ur5_arm" />
     <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
-    <passive_joint name="finger_1_dist_joint" />
     <passive_joint name="finger_2_dist_joint" />
+    <passive_joint name="uree_fixed_joint" />
+    <passive_joint name="urwrist_3_link-tool0_fixed_joint" />
     <passive_joint name="finger_3_dist_joint" />
+    <passive_joint name="finger_1_dist_joint" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="barrett_base_link" link2="finger_1_prox_link" reason="Adjacent" />
     <disable_collisions link1="barrett_base_link" link2="finger_2_prox_link" reason="Adjacent" />
@@ -56,6 +47,7 @@
     <disable_collisions link1="base_link" link2="front_bumper_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="front_left_wheel_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="front_right_wheel_link" reason="Adjacent" />
+    <disable_collisions link1="base_link" link2="kinect2_link" reason="Never" />
     <disable_collisions link1="base_link" link2="rear_bumper_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="rear_left_wheel_link" reason="Adjacent" />
     <disable_collisions link1="base_link" link2="rear_right_wheel_link" reason="Adjacent" />
@@ -97,6 +89,7 @@
     <disable_collisions link1="finger_3_med_link" link2="urwrist_3_link" reason="Never" />
     <disable_collisions link1="front_bumper_link" link2="front_left_wheel_link" reason="Never" />
     <disable_collisions link1="front_bumper_link" link2="front_right_wheel_link" reason="Never" />
+    <disable_collisions link1="front_bumper_link" link2="kinect2_link" reason="Never" />
     <disable_collisions link1="front_bumper_link" link2="rear_bumper_link" reason="Never" />
     <disable_collisions link1="front_bumper_link" link2="rear_left_wheel_link" reason="Never" />
     <disable_collisions link1="front_bumper_link" link2="rear_right_wheel_link" reason="Never" />
@@ -106,6 +99,7 @@
     <disable_collisions link1="front_bumper_link" link2="urshoulder_link" reason="Never" />
     <disable_collisions link1="front_bumper_link" link2="user_rail_link" reason="Never" />
     <disable_collisions link1="front_left_wheel_link" link2="front_right_wheel_link" reason="Never" />
+    <disable_collisions link1="front_left_wheel_link" link2="kinect2_link" reason="Never" />
     <disable_collisions link1="front_left_wheel_link" link2="rear_bumper_link" reason="Never" />
     <disable_collisions link1="front_left_wheel_link" link2="rear_left_wheel_link" reason="Never" />
     <disable_collisions link1="front_left_wheel_link" link2="rear_right_wheel_link" reason="Never" />
@@ -114,6 +108,7 @@
     <disable_collisions link1="front_left_wheel_link" link2="urbase_link" reason="Never" />
     <disable_collisions link1="front_left_wheel_link" link2="urshoulder_link" reason="Never" />
     <disable_collisions link1="front_left_wheel_link" link2="user_rail_link" reason="Never" />
+    <disable_collisions link1="front_right_wheel_link" link2="kinect2_link" reason="Never" />
     <disable_collisions link1="front_right_wheel_link" link2="rear_bumper_link" reason="Never" />
     <disable_collisions link1="front_right_wheel_link" link2="rear_left_wheel_link" reason="Never" />
     <disable_collisions link1="front_right_wheel_link" link2="rear_right_wheel_link" reason="Never" />
@@ -122,11 +117,20 @@
     <disable_collisions link1="front_right_wheel_link" link2="urbase_link" reason="Never" />
     <disable_collisions link1="front_right_wheel_link" link2="urshoulder_link" reason="Never" />
     <disable_collisions link1="front_right_wheel_link" link2="user_rail_link" reason="Never" />
+    <disable_collisions link1="kinect2_link" link2="rear_bumper_link" reason="Never" />
+    <disable_collisions link1="kinect2_link" link2="rear_left_wheel_link" reason="Never" />
+    <disable_collisions link1="kinect2_link" link2="rear_right_wheel_link" reason="Never" />
+    <disable_collisions link1="kinect2_link" link2="top_chassis_link" reason="Never" />
+    <disable_collisions link1="kinect2_link" link2="top_plate_link" reason="Adjacent" />
+    <disable_collisions link1="kinect2_link" link2="urbase_link" reason="Never" />
+    <disable_collisions link1="kinect2_link" link2="urshoulder_link" reason="Never" />
+    <disable_collisions link1="kinect2_link" link2="user_rail_link" reason="Never" />
     <disable_collisions link1="rear_bumper_link" link2="rear_left_wheel_link" reason="Never" />
     <disable_collisions link1="rear_bumper_link" link2="rear_right_wheel_link" reason="Never" />
     <disable_collisions link1="rear_bumper_link" link2="top_chassis_link" reason="Default" />
     <disable_collisions link1="rear_bumper_link" link2="top_plate_link" reason="Never" />
     <disable_collisions link1="rear_bumper_link" link2="urbase_link" reason="Never" />
+    <disable_collisions link1="rear_bumper_link" link2="uree_link" reason="Never" />
     <disable_collisions link1="rear_bumper_link" link2="urshoulder_link" reason="Never" />
     <disable_collisions link1="rear_bumper_link" link2="urupper_arm_link" reason="Never" />
     <disable_collisions link1="rear_bumper_link" link2="user_rail_link" reason="Never" />
