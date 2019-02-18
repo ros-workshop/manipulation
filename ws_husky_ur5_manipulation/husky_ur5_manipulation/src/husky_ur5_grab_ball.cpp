@@ -32,7 +32,6 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <control_msgs/FollowJointTrajectoryGoal.h>
-#include <apriltags2_ros/AprilTagDetectionArray.h>
 #include <tf/transform_listener.h>
 #include <tf/transform_datatypes.h>
 #include <geometry_msgs/Vector3.h>

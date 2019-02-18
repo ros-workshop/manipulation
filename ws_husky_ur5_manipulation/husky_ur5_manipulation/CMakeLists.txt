@@ -12,8 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   moveit_msgs
-  apriltags2_ros
-
+  tf
   moveit_core
   moveit_ros_perception
   moveit_ros_planning_interface
@@ -148,6 +147,7 @@ include_directories(
 add_executable(husky_ur5_grab_ball src/husky_ur5_grab_ball.cpp)
 target_link_libraries(husky_ur5_grab_ball ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
 install(TARGETS husky_ur5_grab_ball DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 
 add_executable(transform_tag_location src/transform_tag_location.cpp)
 target_link_libraries(transform_tag_location ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
