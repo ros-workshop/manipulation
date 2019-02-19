@@ -6,5 +6,5 @@
   <!-- push robot_description to factory and spawn robot in gazebo -->
 <node name="apriltag_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-gazebo -file '$(find apriltags_gazebo)/models/apriltag/model.sdf' -model apriltag -x 0.9 -y -0.1 -z -0.2 " />
 <!--node name="table_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-database cafe_table -gazebo -model cafe_table -y -1 -z -0" /-->
-<node name="ball_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-database cricket_ball -gazebo -model cricket_ball -x 0.9 -y -0.1 -z 3.5" />
+<node name="ball_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-database cricket_ball -gazebo -model cricket_ball -x 0.9 -y -0.1 -z 0.35" />
 </launch>

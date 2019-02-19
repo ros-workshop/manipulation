@@ -82,16 +82,8 @@
       </geometry>
     </collision>
   </link>
-  <!--joint name="finger_1_prox_joint" type="revolute">
-    <origin xyz="0.025 0 0.0415" rpy="0 2.7051E-17 -1.5708" />
-    <parent link="barrett_base_link" />
-    <child link="finger_1_prox_link" />
-    <axis xyz="0 0 -1" />
-    <limit lower="0.0" upper="3.141" effort="10000" velocity="0.2" />
-   <dynamics damping="10.0" friction="10.0" />
-  </joint-->
   <joint name="finger_1_prox_joint" type="revolute">
-    <origin xyz="0.025 0 0.0415" rpy="0 2.7051E-17 3.67" />
+    <origin xyz="0.025 0 0.0415" rpy="0 2.7051E-17 -1.5708" />
     <parent link="barrett_base_link" />
     <child link="finger_1_prox_link" />
     <axis xyz="0 0 -1" />
@@ -129,20 +121,10 @@
       </geometry>
     </collision>
   </link>
-  <!--joint
-    name="finger_1_med_joint"
-    type="revolute">
-    <origin xyz="-0.05 0 0.0339" rpy="-1.5708 -8.8281E-17 0" />
-    <parent link="finger_1_prox_link" />
-    <child link="finger_1_med_link" />
-    <axis xyz="0 0 1" />
-    <limit lower="0" upper="2.44" effort="10000" velocity="0.2" />
-   <dynamics damping="10.0" friction="10.0" />
-  </joint-->
   <joint
     name="finger_1_med_joint"
     type="revolute">
-    <origin xyz="-0.05 0 0.0339" rpy="-1.5708 1.5708 0" />
+    <origin xyz="-0.05 0 0.0339" rpy="-1.5708 -8.8281E-17 0" />
     <parent link="finger_1_prox_link" />
     <child link="finger_1_med_link" />
     <axis xyz="0 0 1" />
@@ -204,16 +186,8 @@
       </geometry>
     </collision>
   </link>
-  <!--joint name="finger_2_prox_joint" type="revolute">
-    <origin xyz="-0.025 0 0.0415" rpy="0 2.7051E-17 -1.5708" />
-    <parent link="barrett_base_link" />
-    <child link="finger_2_prox_link" />
-    <axis xyz="0 0 1" />
-    <limit lower="0" upper="3.141" effort="10000"  velocity="0.2" />
-   <dynamics damping="10.0" friction="10.0" />
-  </joint-->
   <joint name="finger_2_prox_joint" type="revolute">
-    <origin xyz="-0.025 0 0.0415" rpy="0 2.7051E-17 -0.52" />
+    <origin xyz="-0.025 0 0.0415" rpy="0 2.7051E-17 -1.5708" />
     <parent link="barrett_base_link" />
     <child link="finger_2_prox_link" />
     <axis xyz="0 0 1" />
@@ -251,20 +225,10 @@
       </geometry>
     </collision>
   </link>
-  <!--joint
-    name="finger_2_med_joint"
-    type="revolute">
-    <origin xyz="-0.05 0 0.0339" rpy="-1.5708 -8.8281E-17 0" />
-    <parent link="finger_2_prox_link" />
-    <child link="finger_2_med_link" />
-    <axis xyz="0 0 1" />
-    <limit lower="0.0" upper="2.44" effort="10000" velocity="0.2" />
-   <dynamics damping="10.0" friction="10.0" />
-  </joint-->
   <joint
     name="finger_2_med_joint"
     type="revolute">
-    <origin xyz="-0.05 0 0.0339" rpy="-1.5708 1.5708 0" />
+    <origin xyz="-0.05 0 0.0339" rpy="-1.5708 -8.8281E-17 0" />
     <parent link="finger_2_prox_link" />
     <child link="finger_2_med_link" />
     <axis xyz="0 0 1" />
@@ -348,31 +312,12 @@
       </geometry>
     </collision>
   </link>
-  <!--joint
-    name="finger_3_med_joint"
-    type="revolute">
-    <origin
-      xyz="0 -0.05 0.0754"
-      rpy="-1.5708 6.123E-17 1.5708" />
-    <parent
-      link="barrett_base_link" />
-    <child
-      link="finger_3_med_link" />
-    <axis
-      xyz="0 0 1" />
-    <limit
-      lower="0.0"
-      upper="2.44"
-      effort="10000"
-      velocity="0.2" />
-   <dynamics damping="10.0" friction="10.0" />
-  </joint-->
   <joint
     name="finger_3_med_joint"
     type="revolute">
     <origin
       xyz="0 -0.05 0.0754"
-      rpy="-1.5708 1.5708 1.5708" />
+      rpy="-1.5708 6.123E-17 1.5708" />
     <parent
       link="barrett_base_link" />
     <child
@@ -570,8 +515,9 @@
   <!-- finger_1_dist_link -->
   <gazebo reference="finger_1_dist_link">
      <turnGravityOff>true</turnGravityOff>
-      <mu1 value="${finger_mu}" />
-      <mu2 value="${finger_mu}" />
+     <implicitSpringDamper>1</implicitSpringDamper>
+      <mu1 value="${finger_tip_mu}" />
+      <mu2 value="${finger_tip_mu}" />
       <kp value="1000000.0" />
       <kd value="1.0" />
     <material>Gazebo/Grey</material>
@@ -606,9 +552,10 @@
 
   <!-- finger_2_dist_link -->
   <gazebo reference="finger_2_dist_link">
+  <implicitSpringDamper>1</implicitSpringDamper>
      <turnGravityOff>true</turnGravityOff>
-      <mu1 value="${finger_mu}" />
-      <mu2 value="${finger_mu}" />
+      <mu1 value="${finger_tip_mu}" />
+      <mu2 value="${finger_tip_mu}" />
       <kp value="1000000.0" />
       <kd value="1.0" />
     <material>Gazebo/Grey</material>
@@ -626,9 +573,10 @@
 
   <!-- finger_3_dist_link -->
   <gazebo reference="finger_3_dist_link">
+  <implicitSpringDamper>1</implicitSpringDamper>
      <turnGravityOff>true</turnGravityOff>
-      <mu1 value="${finger_mu}" />
-      <mu2 value="${finger_mu}" />
+      <mu1 value="${finger_tip_mu}" />
+      <mu2 value="${finger_tip_mu}" />
       <kp value="1000000.0" />
       <kd value="1.0" />
     <material>Gazebo/Grey</material>
@@ -649,13 +597,14 @@
       <!-- a formal implementation of grasp hack in gazebo with fixed joint -->
       <gripper name="barrett_grasp_hack">
         <grasp_check>
-          <attach_steps>20</attach_steps>
-          <detach_steps>40</detach_steps>
-          <min_contact_count>2</min_contact_count>
+          <attach_steps>4</attach_steps>
+          <detach_steps>2</detach_steps>
+          <min_contact_count>1</min_contact_count>
         </grasp_check>
-        <gripper_link>finger_1_prox_link</gripper_link>
-        <gripper_link>finger_2_prox_link</gripper_link>
+        <gripper_link>finger_1_dist_link</gripper_link>
+        <gripper_link>finger_2_dist_link</gripper_link>
         <palm_link>barrett_base_link</palm_link>
+        <contact_topic>__default_topic__</contact_topic>
       </gripper>
     </gazebo>
 
