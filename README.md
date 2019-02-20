@@ -85,6 +85,7 @@ workshop_ws
 </p> 
 
 </details>
+<br>
 
 You should see something like this:
 
@@ -115,6 +116,7 @@ There is a useful rqt plugin to check your controllers
 </p> 
 
 </details>
+<br>
 
 Now to see the controllers in action, jog the arm and fingers manually.
 
@@ -174,7 +176,9 @@ workshop_ws
 
 </p> 
 
+
 </details>
+<br>
 
 An rviz window will pop up. In Rviz, add the Motion Planning plugin. Once added you should have something like this:
 
@@ -213,6 +217,7 @@ Launch the moveit-setup assistant and load the brocken moveit configuration file
 </p> 
 
 </details>
+<br>
 
 Once loaded you should see a model of your robot appear on the right:
 
@@ -274,6 +279,7 @@ Clone `apriltag2_ros` and launch `apriltag_spawn` and `tag_detection`.
 </p> 
 
 </details>
+<br>
 
 Can you detect the tag? Look in Rviz or at the `/tag_detections` topic.
 
@@ -312,7 +318,7 @@ The transform should be from the `planning frame` to the tag frame . You can fin
 </p> 
 
 </details>
-
+<br>
 
 You should now have the module 2:
 
@@ -343,6 +349,7 @@ rosrun husky_ur5_manipulation transform_tag_location
 </p> 
 
 </details>
+<br>
 
 
  
