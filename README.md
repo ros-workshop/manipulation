@@ -26,7 +26,9 @@ Whenever a robots physically interacts with its surrounding and modifies its env
 
 ### Workspace
 By now you should have already set up a catkin workspace. Clone this repo in `workshop_ws/src`.
+
 <details><summary>Click for Hint</summary>
+  
 <p>
 
 ```python
@@ -34,6 +36,7 @@ cd ~/workshop_ws/src
 git clone https://github.com/ros-workshop/manipulation.git
 ```
 </p>
+
 </details>
 
 ### Dependencies
@@ -62,6 +65,7 @@ you can `sudo apt-get install` almost all of these packages but you will have to
 Launch the robot in gazebo. 
 
 <details><summary>Click for Hint</summary>
+  
 <p>
   
 ```
@@ -96,6 +100,7 @@ Each joint or motor in the arm and hand needs a controller for actuation. Ask yo
 Check which controllers are loaded.
 
 <details><summary>Click for Hint</summary>
+  
 <p>
 There should be a least 3 controllers.
   
@@ -117,6 +122,7 @@ Now to see the controllers in action, jog the arm and fingers manually.
 Move the arm and fingers.
 
 <details><summary>Click for Hint</summary>
+  
 <p>
 
 There is an rqt plugin for that!
@@ -149,6 +155,7 @@ Bringing up the robot in gazebo and start moveit.
 Launch the robot in gazebo and launch the moveit-planning-execution-gazebo pkg.
 
 <details><summary>Click for Hint</summary>
+  
 <p>
   
 ```
@@ -171,17 +178,20 @@ workshop_ws
 
 An rviz window will pop up. In Rviz, add the Motion Planning plugin. Once added you should have something like this:
 
-
+![rviz1](./resources/images/rviz1)
 
 In the *planning* tab of the motion planning pluggin, you can click *update* to give the arm a random valid goal and click *plan and execute*. You should see the robot planning the path and move.... 
 
 <details><summary>Click for  Important Hint</summary>
+  
 <p>
+  
 IT'S NOT GOING TO MOVE
   
 Have a look at the terminal where you've launched moveit from. You should see an error.... that's right, two links are in collision, in fact, all links are in collision! Something is wrong in our moveit configuration  
 
 </p> 
+
 </details>
 
 ### Moveit setup assisstant
@@ -195,14 +205,18 @@ Utimatly, the setup assistant will help us create a package containing all the m
 Launch the moveit-setup assistant and load the brocken moveit configuration file.
 
 <details><summary>Click for Hint</summary>
+  
 <p>
-roslaunch moveit_setup_assistant setup_assistant.launch
+  
+`roslaunch moveit_setup_assistant setup_assistant.launch`
+
 </p> 
+
 </details>
 
 Once loaded you should see a model of your robot appear on the right:
 
-INCLUDE PICTURE HERE
+![setup_assistant](./resources/images/setup_assistant)
 
 Now take a look at the *Self-Collision* tab (our issue had to do with link collisions). You will notice that there are no collisions defined. Go ahead a generate a collision matrix. 
 
@@ -214,11 +228,13 @@ Two other important tabs in the setup assistant are *Planning Groups* and *End E
 **ACTION**
 Inspect how the arm and hand group are formed in the setup assistant.
 
-The *End Effectors* is where we difine the end effector of our robot. This crucial when we want to grasp objects. 
+The *End Effectors* tab is where we difine the end-effector of our robot. This crucial when we want to grasp objects. 
 
 If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
-You can now go to the bottom most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf* file. Before generating the package make sure the select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are. 
+You can now go to the bottom most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf*  file. Before generating the package make sure you select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are.
+
+![set_assistant2](./resources/images/set_assistant2)
 
 **ACTION**
 Select `config/husky_ur5.srdf` and click Generate Package.
@@ -230,18 +246,24 @@ You should now be able to plan a path and see the robot move in Gazebo.
 ## Using Moveit
 
 **A quick example a giving a goal to Moveit in a .cpp file**
+
 ```rosrun husky_ur5_manipulation  moveit_expl```
 
 **ACTION**
 Inpect this file, see what it does and how. You will need this knowledge later.
 
 
-Obviously we want to use our newly acquire super-tool to do more than move an arm around using Rviz. It is time to create a application for our arm. A common one is to grasp object which position are determined using sensors. Here we will be using an image and apriltags.
+Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz. It is time to create a application for our arm. A common one is to grasp an object which position is determined using sensors. Here we will be using an image and apriltags.
 
 Start by cloning the `apriltag2_ros` pkg in your `src` directory.
 
 Then launch the following two files: `apriltag_spawn` and `tag_detection`.
+
+**ACTION**
+Clone `apriltag2_ros` and launch `apriltag_spawn` and `tag_detection`.
+
 <details><summary>Click for Hint</summary>
+  
 <p>
 
 ```
@@ -256,6 +278,7 @@ Then launch the following two files: `apriltag_spawn` and `tag_detection`.
 Can you detect the tag? Look in Rviz or at the `/tag_detections` topic.
 
 **Applicaiton=Integration**
+
 To create any application in ROS we need to integrate several module together. From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our april tag.
 
  + Module 1 : Apriltag detection 
