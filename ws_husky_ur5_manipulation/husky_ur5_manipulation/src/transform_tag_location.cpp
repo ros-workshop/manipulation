@@ -11,10 +11,8 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "transform_tag_location");
-	geometry_msgs::Pose msg;
 	geometry_msgs::TransformStamped tf_msg;
     ros::NodeHandle node;
-	ros::Publisher pub = node.advertise<geometry_msgs::Pose>("tag_pose", 1000);
     tf::TransformListener listener;
     tf::StampedTransform transform;
     while (ros::ok())
@@ -22,7 +20,7 @@ int main(int argc, char **argv)
         try
         {
 
-            listener.lookupTransform("/base_link", "/tag_link", ros::Time(0), transform);
+            listener.lookupTransform(" *****planning link**** ", "/tag_link", ros::Time(0), transform);
         }
         catch (tf::TransformException &ex)
         {
@@ -31,13 +29,7 @@ int main(int argc, char **argv)
             continue;
         }
 		transformStampedTFToMsg(transform,tf_msg);
-		msg.position.x = tf_msg.transform.translation.x;
-		msg.position.y = tf_msg.transform.translation.y;
-		msg.position.z = tf_msg.transform.translation.z;
-        //transform2.setOrigin(transform.getOrigin());
-        //transform2.setRotation(transform3.getRotation());
         
-		pub.publish(msg);
         ros::spinOnce();
     }
     return 0;

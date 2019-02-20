@@ -92,19 +92,19 @@ int main(int argc, char **argv)
 
 	moveit::planning_interface::MoveGroupInterface::Plan my_plan; // plan containing the trajectory
 	static const std::string PLANNING_GROUP = "abb_arm";		  // planning group
-	static const std::string PLANNING_GROUP2 = "barrett_hand";
+	//static const std::string PLANNING_GROUP2 = "barrett_hand";
 	moveit::planning_interface::PlanningSceneInterface planning_scene_interface; // planning interface
 	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP);			 // planning group
-	moveit::planning_interface::MoveGroupInterface hand(PLANNING_GROUP2);		 // planning group
+	//moveit::planning_interface::MoveGroupInterface hand(PLANNING_GROUP2);		 // planning group
 	arm.setPlannerId("RRTConnectkConfigDefault");
 	//can be modified as desired
 	arm.setGoalTolerance(0.001);
 	arm.setPlanningTime(20.0);
 	//hand.setPlannerId("LBKPIECEkConfigDefault");
-	hand.setPlannerId("RRTConnectkConfigDefault");
+	//hand.setPlannerId("RRTConnectkConfigDefault");
 	//can be modified as desired
-	hand.setGoalJointTolerance(0.1);
-	hand.setPlanningTime(20.0);
+	//hand.setGoalJointTolerance(0.1);
+	//hand.setPlanningTime(20.0);
 	//arm.setPlanningTime(10.0);
 	//arm.setPlanningTime(15.0);
 
@@ -122,11 +122,6 @@ int main(int argc, char **argv)
 	arm.plan(my_plan); // check if plan succeded
 	arm.move();
 
-	hand.setJointValueTarget("finger_2_med_joint", 0);
-	hand.setJointValueTarget("finger_1_med_joint", 0);
-	hand.setJointValueTarget("finger_3_med_joint", 0);
-	hand.plan(my_plan);
-	hand.move();
 
 	sleep(4.0);
 
@@ -141,18 +136,6 @@ int main(int argc, char **argv)
 		temp_pose = get_pose.getTarget();
 		temp_pose.position.x -=0.15;
 		temp_pose.position.z += 0.03;
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
-		arm.plan(my_plan); // check if plan succeded
-		arm.move();
-
-		hand.setJointValueTarget("finger_2_med_joint",1.56);
-		hand.setJointValueTarget("finger_1_med_joint", 1.56);
-		hand.setJointValueTarget("finger_3_med_joint", 1.56);
-		hand.plan(my_plan);
-		hand.move();
-
-		sleep(15.0);
-		temp_pose.position.z += 0.13;
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
 		arm.move();
