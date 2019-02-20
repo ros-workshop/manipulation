@@ -4,7 +4,7 @@
    
 
    <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="worlds/empty.world"/>
+    <arg name="world_name" value="$(find husky_gazebo)/worlds/clearpath_playpen.world"/>
     <arg name="gui" value="true"/>
   </include>
 
