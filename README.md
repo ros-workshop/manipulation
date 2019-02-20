@@ -2,7 +2,7 @@
 
 **Goal:**
 
-The session aims to familiaries you with one of the most cricial aspects of modern robotics, *manipulation*.
+The session aims to familiaries you with one of the most crucial aspects of modern robotics, *manipulation*.
 
 **What do we mean by manipulation?**
 
@@ -58,6 +58,7 @@ you can `sudo apt-get install` almost all of these packages but you will have to
 
 ## Everything a Robot needs
 
+**ACTION**
 Launch the robot in gazebo. 
 
 <details><summary>Click for Hint</summary>
@@ -80,3 +81,58 @@ workshop_ws
 </p> 
 
 </details>
+
+You should see something like this:
+
+**INCLUDE PICTURE HERE**
+
+The arm and fingers should stand up straight and be static.
+
+### Controllers
+
+Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a mobile robotic arm with an end-effector? Make sure the controllers have loaded appropriatly. 
+
+**ACTION**
+Check which controllers are loaded.
+
+<details><summary>Click for Hint</summary>
+<p>
+There should be a least 3 controllers.
+  
++ Mobile Base Controller
++ Arm Controller
++ Hand Controller
+
+There is a useful rqt plugin to check your controllers 
+
+**INCLUDE PICTURE HERE**
+
+</p> 
+
+</details>
+
+Now to see the controllers in action, jog the arm and fingers manually.
+
+**ACTION**
+Move the arm and fingers.
+
+<details><summary>Click for Hint</summary>
+<p>
+
+There is an rqt plugin for that!
+
+**INCLUDE PICTURE HERE**
+
+</p> 
+
+</details>
+
+### Joint States
+
+Quickly check that you are getting feedback from your robots `joint_states`.
+
+**ACTION**
+Check that you are getting joint feedback.
+
+
+
