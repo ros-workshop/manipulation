@@ -144,14 +144,19 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/husky_ur5_manipulation_node.cpp)
 
 
-add_executable(husky_ur5_grab_ball src/husky_ur5_grab_ball.cpp)
-target_link_libraries(husky_ur5_grab_ball ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
-install(TARGETS husky_ur5_grab_ball DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+add_executable(husky_ur5_grab_object src/husky_ur5_grab_object.cpp)
+target_link_libraries(husky_ur5_grab_object ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
+install(TARGETS husky_ur5_grab_object DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 
 add_executable(transform_tag_location src/transform_tag_location.cpp)
 target_link_libraries(transform_tag_location ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
 install(TARGETS transform_tag_location DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(moveit_expl src/moveit_expl.cpp)
+target_link_libraries(moveit_expl ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
+install(TARGETS moveit_expl DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 
 
 ## Rename C++ executable without prefix

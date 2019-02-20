@@ -22,7 +22,7 @@ int main(int argc, char **argv)
         try
         {
 
-            listener.lookupTransform("/world", "/tag_link", ros::Time(0), transform);
+            listener.lookupTransform("/base_link", "/tag_link", ros::Time(0), transform);
         }
         catch (tf::TransformException &ex)
         {
