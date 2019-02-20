@@ -351,6 +351,49 @@ rosrun husky_ur5_manipulation transform_tag_location
 </details>
 <br>
 
+Now run `husky_ur5_grab_object`. You should see the end-effector move to the front of the object. Modify the code to make the hand grasp of object and drop it on the husky base
 
- 
-    
+**ACTION**
+Modify `husky_ur5_grab_object.cpp` to make hand grasp the object and that arm drop it on the husky base.
+
+<details><summary>Hint</summary>
+  
+<p>
+
+Create a MoveGroup for the barrette hand .
+
+Use joint targets to close the hand.
+
+The Object will stick to the hand after a few seonds of contact.
+
+</p> 
+
+</details>
+<br>
+
+
+##Goals Strech
+
+**Goal:** make the arm grasp the object whislt avoiding the environment
+
+Restart the Gazebo simulation and launch `obsatcle_apriltag_spawn`. Grasp the object without hittting obstacles.
+
+
+<details><summary>Hint</summary>
+  
+<p>
+
+Moveit will do the obstacle avoidance for you provided an OctoMap
+
+An OctoMap can be created using a depth camera
+
+Start the moveit sensor manager (only a few lines to comment in the right file)
+
+</p> 
+
+</details>
+<br>
+
+
+
+
