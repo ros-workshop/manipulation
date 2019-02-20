@@ -277,12 +277,14 @@ Clone `apriltag2_ros` and launch `apriltag_spawn` and `tag_detection`.
 
 Can you detect the tag? Look in Rviz or at the `/tag_detections` topic.
 
-**Applicaiton=Integration**
+**Applicaiton = Integration**
 
-To create any application in ROS we need to integrate several module together. From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our april tag.
+To create any application in ROS we need to integrate several modules together. From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our apriltag.
 
  + Module 1 : Apriltag detection 
     - output: tf from `camera_link` to `tag_link`
+    
+What we want is to grasp the object with the tag
  
  + Module 3 : Object grasping
     - output: arm and hand trajectory msgs
@@ -290,7 +292,7 @@ To create any application in ROS we need to integrate several module together. F
  
  We are not quite there! the output of module 1 does not match the input of module 3. We need module 2.
  
- ### Transform listner 
+ ### Transform listener
  
  Have a look at the node `transform_tag_location.cpp` located in `husky_ur5_manipulation`.
  
@@ -328,7 +330,7 @@ We now have all 3 modules required. Make sure that you have module 1 and 2 runni
   
 <p>
 
-To have everything up at runnin you need to have launched the following:
+To have everything up at running you need to have launched the following:
 
 ```
 roslaunch husky_ur5_gazebo husky_ur5.launch
@@ -341,5 +343,7 @@ rosrun husky_ur5_manipulation transform_tag_location
 </p> 
 
 </details>
+
+
  
     
