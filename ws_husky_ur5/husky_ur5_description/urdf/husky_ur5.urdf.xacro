@@ -12,7 +12,7 @@
   
   <link name="world"/>-->
   <joint name="husky_abb" type="fixed">
-  	<origin xyz="0.3 0 0.25" rpy="0 0 0"/>
+  	<origin xyz="0.3 0 0.253" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="abb2_base_link"/>
   </joint> 
@@ -21,7 +21,7 @@
 
   <joint name="abb_barrett_joint" type="fixed">
     <axis xyz="0 1 0" />
-    <origin xyz="0.0015 0 0" rpy="1.57 0 1.57"/>
+    <origin xyz="0.0025 0 0" rpy="1.57 0 1.57"/>
     <parent link="abb2_link_6"/>
     <child link="barrett_base_link"/>
   </joint> 

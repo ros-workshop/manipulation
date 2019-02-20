@@ -6,14 +6,14 @@
       <link name="box">
       <inertial>
           <inertia>
-            <ixx>0.1</ixx>
+            <ixx>0.001</ixx>
             <ixy>0</ixy>
             <ixz>0</ixz>
-            <iyy>0.1-</iyy>
+            <iyy>0.001-</iyy>
             <iyz>0</iyz>
-            <izz>0.1</izz>
+            <izz>0.001</izz>
           </inertia>
-          <mass>10</mass>
+          <mass>1</mass>
         </inertial>
         <collision name="collision">
           <geometry>

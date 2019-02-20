@@ -139,17 +139,24 @@ int main(int argc, char **argv)
 		}
 
 		temp_pose = get_pose.getTarget();
-		temp_pose.position.x -=0.1;
+		temp_pose.position.x -=0.15;
 		temp_pose.position.z += 0.03;
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
 		arm.move();
 
-		hand.setJointValueTarget("finger_2_med_joint",1.7);
-		hand.setJointValueTarget("finger_1_med_joint", 1.7);
-		hand.setJointValueTarget("finger_3_med_joint", 1.7);
+		hand.setJointValueTarget("finger_2_med_joint",1.56);
+		hand.setJointValueTarget("finger_1_med_joint", 1.56);
+		hand.setJointValueTarget("finger_3_med_joint", 1.56);
 		hand.plan(my_plan);
 		hand.move();
+
+		sleep(15.0);
+		temp_pose.position.z += 0.13;
+		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+		arm.plan(my_plan); // check if plan succeded
+		arm.move();
+
 		ros::spinOnce();
 
 		loop_rate.sleep();
