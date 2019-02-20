@@ -372,7 +372,7 @@ The Object will stick to the hand after a few seonds of contact.
 <br>
 
 
-##Goals Strech
+## Goals Strech
 
 **Goal:** make the arm grasp the object whislt avoiding the environment
 
