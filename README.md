@@ -171,17 +171,41 @@ rosrun rqt_joint_trajectory_controller rqt_joint_trajectory_controller
 
 ### Joint States
 
-Quickly check that you are getting feedback from your robots `joint_states`.
+**ACTION** Check that you are getting feedback from your robots `joint_states`.
 
-**ACTION**
-Check that you are getting .
+<details><summary>Click for Hint</summary>
+
+Use `rostopic echo /joint_states` and you should see something like:
+
+```
+header: 
+  seq: 206558
+  stamp: 
+    secs: 3364
+    nsecs: 470000000
+  frame_id: ''
+name: [abb2_joint_1, abb2_joint_2, abb2_joint_3, abb2_joint_4, abb2_joint_5, abb2_joint_6,
+  finger_1_dist_joint, finger_1_med_joint, finger_1_prox_joint, finger_2_dist_joint,
+  finger_2_med_joint, finger_2_prox_joint, finger_3_dist_joint, finger_3_med_joint,
+  front_left_wheel, front_right_wheel, rear_left_wheel, rear_right_wheel]
+position: [0.00032209507270231086, 0.029705080560157526, -0.045566170951020446, 0.0013755875530101491, 0.011665304611981675, 0.0042873037305675155, 0.6000000000889099, 9.921607535545718e-09, -1.3813679089480502e-09, 0.6000000000623906, 9.533138722872536e-09, 4.088242899769057e-08, 0.5999999999707182, 8.249177341212999e-08, -3.791679371458411, -3.7625546328459993, -3.82143007050297, -3.825014721779551]
+velocity: [0.0031072944551323338, -0.00024589280552260895, -0.0003502345108150297, -0.01642694515454311, 0.0002473546599235343, 0.015647407170457883, 8.890796740994584e-09, 1.4727589797510176e-08, -5.6046476257774576e-08, 6.238657163250017e-09, 1.0317774130493553e-08, -1.666632588062669e-07, -2.9254809393228006e-09, -1.212269241301142e-07, 9.066189840782844e-05, 0.00020114626581779229, 8.929489784498638e-05, 0.0001963030063448588]
+effort: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+```
+
+</details>
 
 ### Kinect
 
-Quickly check that you are getting an image from the kinect
+**ACTION** Check that you are getting images and point clouds from the simulated Kinect sensor
 
-**ACTION**
-Check that you are getting kinect images
+<details><summary>Click for Hint</summary>
+
+View this image topic: `/kinect2/rgb/image_raw`
+
+View this Pointcloud topic: `/kinect2/depth_registered/points` (e.g. using `rviz`)
+
+</details>
 
 ## MoveIt
 
