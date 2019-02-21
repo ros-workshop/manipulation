@@ -244,39 +244,54 @@ roslaunch husky_ur5_moveit_config moveit_planning_execution_gazebo.launch
 </details>
 <br>
 
-An rviz window will pop up. In Rviz, add the Motion Planning plugin. Once added you should have something like this:
+An `rviz` window will pop up. In `rviz`, add the Motion Planning plugin. Once added you should have something like this:
 
 ![rviz1](./resources/images/rviz1)
 
-In the *planning* tab of the motion planning pluggin, you can click *update* to give the arm a random valid goal and click *plan and execute*. You should see the robot planning the path and move.... 
+In the *planning* tab of the motion planning plugin, you can click *update* to give the arm a random valid goal and click *plan and execute*. You should see the robot planning the path and move.... 
 
-<details><summary>Click for  Important Hint</summary>
+<details><summary>Click for an important Hint</summary>
   
 <p>
   
 IT'S NOT GOING TO MOVE
   
-Have a look at the terminal where you've launched moveit from. You should see an error.... that's right, two links are in collision, in fact, all links are in collision! Something is wrong in our moveit configuration  
+Have a look at the terminal where you've launched moveit from. You should see an error.... that's right, two links are in collision, in fact, all links are in collision! Something is wrong in our MoveIt configuration  
 
 </p> 
 
 </details>
 
-### Moveit setup assisstant
+### MoveIt Setup Assistant
 
 **ACTION**
-Install moveit-setup-assistant
 
-Utimatly, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
+Install the [MoveIt! Setup Assistant](http://docs.ros.org/kinetic/api/moveit_tutorials/html/doc/setup_assistant/setup_assistant_tutorial.html)
+
+Utimately, the Setup Assistant will help us create a package containing all the MoveIt configuration files along with launch files to get the robot up and running.
+
+<details><summary>Click for Hint</summary>
+
+```
+sudo apt install ros-kinetic-moveit-setup-assistant
+```
+
+</details>
+
 
 **ACTION**
-Launch the moveit-setup assistant and load the brocken moveit configuration file.
+
+Launch the moveit-setup assistant and load the broken MoveIt configuration file.
 
 <details><summary>Click for Hint</summary>
   
 <p>
   
-`roslaunch moveit_setup_assistant setup_assistant.launch`
+Run `roslaunch moveit_setup_assistant setup_assistant.launch`
+
+Select `Edit existing` and open the folder `src/manipulation/ws_husky_ur5/husky_ur5_moveit_config`
+
+Expand the panel on the right
 
 </p> 
 
@@ -301,7 +316,7 @@ The *End Effectors* tab is where we difine the end-effector of our robot. This c
 
 If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
-You can now go to the bottom most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf*  file. Before generating the package make sure you select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are.
+You can now go to the bottom-most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf*  file. Before clicking `Generate Package` make sure you select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are.
 
 ![set_assistant2](./resources/images/set_assistant2)
 
@@ -321,15 +336,12 @@ You should now be able to plan a path and see the robot move in Gazebo.
 **ACTION**
 Inpect this file, see what it does and how. You will need this knowledge later.
 
-
 Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz. It is time to create a application for our arm. A common one is to grasp an object which position is determined using sensors. Here we will be using an image and apriltags.
-
-Start by cloning the `apriltag2_ros` pkg in your `src` directory.
 
 Then launch the following two files: `apriltag_spawn` and `tag_detection`.
 
 **ACTION**
-Clone `apriltag2_ros` and launch `apriltag_spawn` and `tag_detection`.
+Launch `apriltag_spawn` and `tag_detection` from the `apriltags_gazebo` ROS package.
 
 <details><summary>Click for Hint</summary>
   
@@ -347,7 +359,7 @@ Clone `apriltag2_ros` and launch `apriltag_spawn` and `tag_detection`.
 
 Can you detect the tag? Look in Rviz or at the `/tag_detections` topic.
 
-**Applicaiton = Integration**
+**Application = Integration**
 
 To create any application in ROS we need to integrate several modules together. From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our apriltag.
 
