@@ -39,7 +39,7 @@
       <origin xyz="-0.12 0.125 -0.04" rpy="0 0 -${PI/2}"/>
       <geometry>
 <!-- 	  <box size="0.05 0.05 0.1"/> -->
-	<mesh filename="package://abb_barrett_description/meshes/kinect.STL" scale="0.001 0.001 0.001"/>/
+	<mesh filename="package://husky_ur5_description/meshes/kinect/kinect.STL" scale="0.001 0.001 0.001"/>/
       </geometry>
     </collision>
 
@@ -47,7 +47,7 @@
       <origin xyz="-0.12 0.125 -0.04" rpy="0 0 -${PI/2}"/>
       <geometry>
 <!-- 		<box size="0.05 0.05 0.1"/> -->
-	 <mesh filename="package://abb_barrett_description/meshes/kinect.STL" scale="0.001 0.001 0.001"/>/
+	 <mesh filename="package://husky_ur5_description/meshes/kinect/kinect.STL" scale="0.001 0.001 0.001"/>/
       </geometry>
       <material name="red"/>
     </visual>
