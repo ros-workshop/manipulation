@@ -212,7 +212,7 @@ View this Pointcloud topic: `/kinect2/depth_registered/points` (e.g. using `rviz
 Bringing up the robot in gazebo and start moveit.
 
 **ACTION**
-Launch the robot in gazebo and launch the moveit-planning-execution-gazebo pkg.
+Launch the robot in gazebo and launch the `moveit-planning-execution-gazebo` pkg.
 
 <details><summary>Click for Hint</summary>
   
@@ -234,7 +234,13 @@ workshop_ws
 
 </p> 
 
+<details><summary>Click to cheat</summary>
 
+```
+roslaunch husky_ur5_moveit_config moveit_planning_execution_gazebo.launch                                                    
+```
+
+</details>
 </details>
 <br>
 
