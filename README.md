@@ -50,6 +50,7 @@ There are quite a few packages that need to be installed for the session:
 + husky_description
 + controller_manager
 + gazebo_ros_control
++ abb_resources
 
 <details><summary>Click for Hint</summary>
 <p>
