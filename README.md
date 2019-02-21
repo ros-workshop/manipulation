@@ -9,7 +9,7 @@ The session aims to familiaries you with one of the most crucial aspects of mode
 Whenever a robots physically interacts with its surrounding and modifies its environement, we talk about manipulation.
 
 **What are the challenges of robotic manipulation?**
-+ *Path Planning:* Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120),[UR5](https://www.scottautomation.com/products/ur5-universal-robot/)). An arm often has between 5 and 7 Dof. Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
++ *Path Planning:* Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120), [UR5](https://www.scottautomation.com/products/ur5-universal-robot/)). An arm often has between 5 and 7 Dof. Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
 + *Grasping:* Once the arm knows how to travel from one place to another, its time to actually grasping something. Grasping in a vast and vibrant research topic mostly because how challenigng it be be for robots to find suitable grasp poses fro everyday objects.
 
 
@@ -128,6 +128,17 @@ There is a useful rqt plugin to check your controllers
 
 </p> 
 
+<details><summary>Click to cheat!</summary>
+
+Install and run [rqt_controller_manager](http://wiki.ros.org/rqt_controller_manager)
+
+```
+sudo apt install ros-kinetic-rqt-controller-manager  
+source /opt/ros/kinetic/setup.bash 
+rosrun rqt_controller_manager rqt_controller_manager 
+```
+
+</details>
 </details>
 <br>
 
@@ -144,7 +155,17 @@ There is an rqt plugin for that!
 
 ![traj_controller](./resources/images/traj_controller)
 
-</p> 
+<details><summary>Click to cheat!</summary>
+
+Install and run [rqt_joint_trajectory_controller](http://wiki.ros.org/rqt_joint_trajectory_controller)
+
+```
+sudo apt install ros-kinetic-rqt-joint-trajectory*
+source /opt/ros/kinetic/setup.bash 
+rosrun rqt_joint_trajectory_controller rqt_joint_trajectory_controller
+```
+
+</details>
 
 </details>
 
