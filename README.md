@@ -237,61 +237,46 @@ workshop_ws
 <details><summary>Click to cheat</summary>
 
 ```
-roslaunch husky_ur5_moveit_config moveit_planning_execution_gazebo.launch                                                    
+roslaunch husky_abb_moveit_config moveit_planning_execution_gazebo.launch                                                    
 ```
 
 </details>
 </details>
 <br>
 
-An `rviz` window will pop up. In `rviz`, add the Motion Planning plugin. Once added you should have something like this:
+An rviz window will pop up. In Rviz, add the Motion Planning plugin. Once added you should have something like this:
 
 ![rviz1](./resources/images/rviz1)
 
-In the *planning* tab of the motion planning plugin, you can click *update* to give the arm a random valid goal and click *plan and execute*. You should see the robot planning the path and move.... 
+In the *planning* tab of the motion planning pluggin, you can click *update* to give the arm a random valid goal and click *plan and execute*. You should see the robot planning the path and move.... 
 
-<details><summary>Click for an important Hint</summary>
+<details><summary>Click for  Important Hint</summary>
   
 <p>
   
 IT'S NOT GOING TO MOVE
   
-Have a look at the terminal where you've launched moveit from. You should see an error.... that's right, two links are in collision, in fact, all links are in collision! Something is wrong in our MoveIt configuration  
+Have a look at the terminal where you've launched moveit from. You should see an error.... that's right, two links are in collision, in fact, all links are in collision! Something is wrong in our moveit configuration  
 
 </p> 
 
 </details>
 
-### MoveIt Setup Assistant
+### Moveit setup assisstant
 
 **ACTION**
+Install moveit-setup-assistant
 
-Install the [MoveIt! Setup Assistant](http://docs.ros.org/kinetic/api/moveit_tutorials/html/doc/setup_assistant/setup_assistant_tutorial.html)
-
-Utimately, the Setup Assistant will help us create a package containing all the MoveIt configuration files along with launch files to get the robot up and running.
-
-<details><summary>Click for Hint</summary>
-
-```
-sudo apt install ros-kinetic-moveit-setup-assistant
-```
-
-</details>
-
+Utimatly, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
 
 **ACTION**
-
-Launch the moveit-setup assistant and load the broken MoveIt configuration file.
+Launch the moveit-setup assistant and load the brocken moveit configuration file.
 
 <details><summary>Click for Hint</summary>
   
 <p>
   
-Run `roslaunch moveit_setup_assistant setup_assistant.launch`
-
-Select `Edit existing` and open the folder `src/manipulation/ws_husky_ur5/husky_ur5_moveit_config`
-
-Expand the panel on the right
+`roslaunch moveit_setup_assistant setup_assistant.launch`
 
 </p> 
 
@@ -316,7 +301,7 @@ The *End Effectors* tab is where we difine the end-effector of our robot. This c
 
 If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
-You can now go to the bottom-most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf*  file. Before clicking `Generate Package` make sure you select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are.
+You can now go to the bottom most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf*  file. Before generating the package make sure you select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are.
 
 ![set_assistant2](./resources/images/set_assistant2)
 
@@ -331,17 +316,20 @@ You should now be able to plan a path and see the robot move in Gazebo.
 
 **A quick example a giving a goal to Moveit in a .cpp file**
 
-```rosrun husky_ur5_manipulation  moveit_expl```
+```rosrun husky_abb_manipulation  moveit_expl```
 
 **ACTION**
 Inpect this file, see what it does and how. You will need this knowledge later.
 
+
 Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz. It is time to create a application for our arm. A common one is to grasp an object which position is determined using sensors. Here we will be using an image and apriltags.
+
+Start by cloning the `apriltag2_ros` pkg in your `src` directory.
 
 Then launch the following two files: `apriltag_spawn` and `tag_detection`.
 
 **ACTION**
-Launch `apriltag_spawn` and `tag_detection` from the `apriltags_gazebo` ROS package.
+Clone `apriltag2_ros` and launch `apriltag_spawn` and `tag_detection`.
 
 <details><summary>Click for Hint</summary>
   
@@ -359,7 +347,7 @@ Launch `apriltag_spawn` and `tag_detection` from the `apriltags_gazebo` ROS pack
 
 Can you detect the tag? Look in Rviz or at the `/tag_detections` topic.
 
-**Application = Integration**
+**Applicaiton = Integration**
 
 To create any application in ROS we need to integrate several modules together. From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our apriltag.
 
@@ -376,7 +364,7 @@ What we want is to grasp the object with the tag
  
  ### Transform listener
  
- Have a look at the node `transform_tag_location.cpp` located in `husky_ur5_manipulation`.
+ Have a look at the node `transform_tag_location.cpp` located in `husky_abb_manipulation`.
  
  Run this node and see what it does. Modify it so we obtain a `geometry_msgs/Pose` out of it.
  
@@ -415,11 +403,11 @@ We now have all 3 modules required. Make sure that you have module 1 and 2 runni
 To have everything up at running you need to have launched the following:
 
 ```
-roslaunch husky_ur5_gazebo husky_ur5.launch
-roslaunch husky_ur5_moveit_config  moveit_planning_execution_gazebo.launch 
+roslaunch husky_abb_gazebo husky_abb.launch
+roslaunch husky_abb_moveit_config  moveit_planning_execution_gazebo.launch 
 roslaunch apriltags_gazebo apriltag_spawn.launch 
 roslaunch apriltags_gazebo tag_detection.launch 
-rosrun husky_ur5_manipulation transform_tag_location 
+rosrun husky_abb_manipulation transform_tag_location 
 ```
 
 </p> 
@@ -427,10 +415,10 @@ rosrun husky_ur5_manipulation transform_tag_location
 </details>
 <br>
 
-Now run `husky_ur5_grab_object`. You should see the end-effector move to the front of the object. Modify the code to make the hand grasp of object and drop it on the husky base
+Now run `husky_abb_grab_object`. You should see the end-effector move to the front of the object. Modify the code to make the hand grasp of object and drop it on the husky base
 
 **ACTION**
-Modify `husky_ur5_grab_object.cpp` to make hand grasp the object and that arm drop it on the husky base.
+Modify `husky_abb_grab_object.cpp` to make hand grasp the object and that arm drop it on the husky base.
 
 <details><summary>Hint</summary>
   
@@ -469,7 +457,3 @@ Start the moveit sensor manager (only a few lines to comment in the right file)
 
 </details>
 <br>
-
-
-
-
