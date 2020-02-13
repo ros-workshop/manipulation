@@ -22,6 +22,10 @@
 #include <control_msgs/FollowJointTrajectoryGoal.h>
 #include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Pose.h>
+// These messages are used to manually publish cmd_vel
+#include <geometry_msgs/Twist.h>
+#include <tf/transform_broadcaster.h>
+
 // start of the subscribe class//
 
 using namespace tf;
@@ -57,7 +61,7 @@ class Subscribe
 Subscribe::Subscribe()
 {
 
-	pose_sub = n.subscribe("/tag_pose", 1, &Subscribe::setPoseCallback, this);
+	pose_sub = n.subscribe("/tag_pose", 1000, &Subscribe::setPoseCallback, this);
 	setFalse();
 }
 
@@ -83,18 +87,16 @@ bool Subscribe::serviceCallback(std_srvs::SetBool::Request &req, std_srvs::SetBo
 
 }
 
-void Subscribe::setPoseCallback(const geometry_msgs::Pose::ConstPtr &pose)
+void Subscribe::setPoseCallback(const geometry_msgs::Pose::ConstPtr& pose)
 {
 	target_pose.position = pose->position;
 	target_pose.orientation = createQuaternionMsgFromRollPitchYaw(1.57,0, 0);
-	
-
 }
 
 geometry_msgs::Pose Subscribe::getTarget()
 {
-	ROS_INFO("Retreiving target pose");
-	ROS_INFO("Target pose received:\n x:[%f]\n y:[%f]\n z:[%f]\n w:[%f]", target_pose.position.x, target_pose.position.y, target_pose.position.z, target_pose.orientation.w);
+	//ROS_INFO("Retreiving target pose");
+	//ROS_INFO("Target pose received:\n x:[%f]\n y:[%f]\n z:[%f]\n w:[%f]", target_pose.position.x, target_pose.position.y, target_pose.position.z, target_pose.orientation.w);
 	return (target_pose);
 }
 
@@ -114,11 +116,99 @@ bool Subscribe::getFlag()
 	return _flag;
 }
 
+
+class command_vel {
+  public:
+    void start_publisher () {
+      husky_commands =  nh.advertise<geometry_msgs::Twist>("/husky_velocity_controller/cmd_vel",1000);
+    }
+
+	void stop_husky() {
+		velocity_commands.linear.x = 0.0;
+        velocity_commands.linear.y = 0.0;
+        velocity_commands.linear.z = 0.0;
+
+        velocity_commands.angular.x = 0.0;
+        velocity_commands.angular.y = 0.0;
+        velocity_commands.angular.z = 0.0;
+		husky_commands.publish(velocity_commands);
+
+	}
+
+    bool drive_forwards(){
+		ROS_INFO("STARTED DRIVING FORWARDS");
+		geometry_msgs::Pose cube_position=get_pose.getTarget();
+
+		stop_husky();
+
+		while(fabsf(cube_position.position.y)>.11){
+		  cube_position=get_pose.getTarget();
+		  ros::Rate rate(1);//publish at 1 Hz
+		  velocity_commands.angular.x = 0.0;
+          velocity_commands.angular.y = 0.0;
+          velocity_commands.angular.z = cube_position.position.y*1.15;
+		  husky_commands.publish(velocity_commands);
+		}
+
+		stop_husky();
+
+		while(cube_position.position.x>0.85) {
+		  cube_position=get_pose.getTarget();
+		  ros::Rate rate(1);//publish at 1 Hz
+		  velocity_commands.linear.x=cube_position.position.x*0.1;
+		  husky_commands.publish(velocity_commands);
+		}
+
+		stop_husky();
+
+		sleep(5.0);
+
+
+    }
+    
+	bool drive_backwards(){
+		ROS_INFO("STARTED DRIVING BACKWARDS");
+		
+		int i=0;
+
+		while(i<8) {
+		velocity_commands.linear.x = -0.5;
+        velocity_commands.linear.y = 0.0;
+        velocity_commands.linear.z = 0.0;
+
+        velocity_commands.angular.x = 0.0;
+        velocity_commands.angular.y = 0.0;
+        velocity_commands.angular.z = 0.0;
+		husky_commands.publish(velocity_commands);
+		i++;
+		sleep(1);
+		}
+
+		velocity_commands.linear.x = 0.0;
+        velocity_commands.linear.y = 0.0;
+        velocity_commands.linear.z = 0.0;
+
+        velocity_commands.angular.x = 0.0;
+        velocity_commands.angular.y = 0.0;
+        velocity_commands.angular.z = 0.0;
+		husky_commands.publish(velocity_commands);
+
+
+    } 
+
+  private:
+    ros::NodeHandle nh;
+    ros::Publisher husky_commands;
+    float x;
+	Subscribe get_pose;
+	geometry_msgs::Twist velocity_commands;
+	};
+
 int main(int argc, char **argv)
 {
 	//delcarations
 
-	ros::init(argc, argv, "husky_ur5_grab_object");
+	ros::init(argc, argv, "husky_abb_grab_object");
 	ros::NodeHandle node_handle;
 	ros::AsyncSpinner spinner(2);
 	spinner.start();
@@ -137,8 +227,8 @@ int main(int argc, char **argv)
 	moveit::planning_interface::MoveGroupInterface hand(PLANNING_GROUP2);		 // planning group
 	arm.setPlannerId("RRTConnectkConfigDefault");
 	//can be modified as desired
-	arm.setGoalTolerance(0.001);
-	arm.setPlanningTime(5.0);
+	arm.setGoalTolerance(0.01);
+	arm.setPlanningTime(15.0);
 	//hand.setPlannerId("LBKPIECEkConfigDefault");
 	hand.setPlannerId("RRTConnectkConfigDefault");
 	//can be modified as desired
@@ -146,6 +236,9 @@ int main(int argc, char **argv)
 	hand.setPlanningTime(5.0);
 	//arm.setPlanningTime(10.0);
 	//arm.setPlanningTime(15.0);
+
+	command_vel HUSKY;
+	HUSKY.start_publisher();
 
 	// end of declarations
 
@@ -156,66 +249,106 @@ int main(int argc, char **argv)
 	ROS_INFO("Reference frame: %s", arm.getEndEffectorLink().c_str());
 
 	temp_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
-
+	
+	ROS_INFO("Pose:HOME");
 	arm.setNamedTarget("home");
 	arm.plan(my_plan); // check if plan succeded
 	arm.move();
+	
+	/*ROS_INFO("Pose: x to .1");
+	temp_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
+	temp_pose.position.x += .1;
+	arm.setPoseTarget(temp_pose);
+	arm.plan(my_plan);
+	arm.move();*/
+
+	/*ROS_INFO("Pose:HOME");
+	arm.setNamedTarget("home");
+	arm.plan(my_plan); // check if plan succeded
+	arm.move();*/
 
 	hand.setJointValueTarget("finger_2_med_joint", 0);
 	hand.setJointValueTarget("finger_1_med_joint", 0);
 	hand.setJointValueTarget("finger_3_med_joint", 0);
 	hand.plan(my_plan);
 	hand.move();
-
+	ROS_INFO("2");
 	sleep(4.0);
 
 
 
 	ros::ServiceServer service = n.advertiseService("grasp", &Subscribe::serviceCallback, &get_pose);
-
-	while (true) // keep on running until stoped
+	ROS_INFO("3");
+	while (ros::ok) // keep on running until stoped
 	{
-
+		ROS_INFO("4");
 		get_pose.setFalse();
-		while (!get_pose.getFlag())
-		{
+		while (!get_pose.getFlag()){ 
 		}
+		//Moving towards the cube
+		HUSKY.drive_forwards();
 		ROS_INFO("starting motion plan");
-		temp_pose = get_pose.getTarget();
-		temp_pose.position.x -=0.15;
-		temp_pose.position.z += 0.03;
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
-		arm.plan(my_plan); // check if plan succeded
-		moveit::planning_interface::MoveItErrorCode success = arm.move();
+		temp_pose = get_pose.getTarget(); //set the desired pose to the position of the cube
+		temp_pose.position.z += 0.183;	  //offset by .19 meters in the z axis
+		temp_pose.position.x -= 0.1;
+		temp_pose.orientation.w= 0.819;
+		temp_pose.orientation.x= 0.0;
+		temp_pose.orientation.y= 0.574;
+		temp_pose.orientation.z= 0.0;   // and pointed straight down
 
-		if (success==moveit_msgs::MoveItErrorCodes::SUCCESS){
-		hand.setJointValueTarget("finger_2_med_joint",1.56);
-		hand.setJointValueTarget("finger_1_med_joint", 1.56);
-		hand.setJointValueTarget("finger_3_med_joint", 1.56);
+		ROS_INFO("5");
+		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+		ROS_INFO("6");
+		arm.plan(my_plan); // check if plan succeded
+		ROS_INFO("7");
+		arm.move();
+		ROS_INFO("8");
+
+		hand.setJointValueTarget("finger_2_med_joint",1.5);//closing hand
+		hand.setJointValueTarget("finger_1_med_joint",1.5);
+		hand.setJointValueTarget("finger_3_med_joint",1.5);
 		hand.plan(my_plan);
-		success = hand.move();
-		}
-	
-		sleep(12.0);
-		if (success==moveit_msgs::MoveItErrorCodes::SUCCESS){
-		temp_pose.position.z += 0.13;
+		hand.move();
+		
+		sleep(8);
+		ROS_INFO("9");
+		
+		temp_pose.position.z += 0.13;//raising cube in the air
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
-		success = arm.move();
-		}
+		arm.move();
+		
+
+		arm.setJointValueTarget("abb2_joint_1",-2.88);//moving hand to the back of the husky		
+		arm.setJointValueTarget("abb2_joint_2",0.54);	
+		arm.setJointValueTarget("abb2_joint_3",-0.51);	
+		arm.setJointValueTarget("abb2_joint_4",-0.17);	
+		arm.setJointValueTarget("abb2_joint_5",1.34);	
+		arm.setJointValueTarget("abb2_joint_6",-6.70);
+		arm.plan(my_plan);
+		arm.move();
+			
+		
+		hand.setJointValueTarget("finger_2_med_joint", 0);//opening hand
+		hand.setJointValueTarget("finger_1_med_joint", 0);
+		hand.setJointValueTarget("finger_3_med_joint", 0);
+		hand.plan(my_plan);
+		hand.move();
+		sleep(12);
+		arm.setNamedTarget("home");// This is needed so that the robot arm will not block the LIDAR
+		arm.plan(my_plan);
+		arm.move();				
 
 		ROS_INFO("finished motion plan");
+		HUSKY.drive_backwards();
 
-		if (success==moveit_msgs::MoveItErrorCodes::SUCCESS){
+		
 		get_pose.setSuccess(true);
-		}
+		
 
-		else{
-			get_pose.setSuccess(false);
-		}
 		ros::spinOnce();
 
 		loop_rate.sleep();
 	}
 	return 0;
-}
+}	

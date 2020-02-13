@@ -1,38 +1,21 @@
 <?xml version="1.0" ?>
 
 <launch>
-   
-
-   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find husky_gazebo)/worlds/clearpath_playpen.world"/>
-    <arg name="gui" value="true"/>
-  </include>
-
-  <!-- urdf xml robot description loaded on the Parameter Server, converting the xacro into a proper urdf file-->
+  <!-- launch the robot -->
+  <include file="$(find husky_gazebo)/launch/husky_playpen.launch"> </include>
   
-
-    
-   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find husky_abb_description)/urdf/husky_abb.urdf.xacro'"/>
-  
-  <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="husky_abb_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model husky_abb" />
-  
-     
-    <!-- convert joint states to TF transforms for rviz, etc -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-  output="screen">
-  
-   </node>
   <rosparam file="$(find husky_abb_gazebo)/config/joint_state_controller.yaml" command="load" />  
-  <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" />
+   <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" />
 	
   <rosparam file="$(find husky_abb_gazebo)/config/controllers.yaml" command="load"/>
    <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn abb_controller barrett_hand_trajectory_controller" respawn="false" output="screen"/>
 
-   <!-- Load controller configuration -->
-  <rosparam command="load" file="$(find husky_control)/config/control.yaml" />
-  <!-- Spawn controllers -->
-  <node name="base_controller_spawner" pkg="controller_manager" type="spawner"
-        args="husky_joint_publisher husky_velocity_controller"/>
+
+  
+  <!--Load gps_to_odometry node
+  <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" clear_params="true">
+  <rosparam command="load" file="$(find slam_navigation)/config/navsat_transform_node_param.yaml" />
+  <remap from="gps/fix" to="navsat/fix"/>
+  </node>-->
 
 </launch>

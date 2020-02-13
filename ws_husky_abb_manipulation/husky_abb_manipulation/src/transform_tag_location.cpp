@@ -21,8 +21,8 @@ int main(int argc, char **argv)
     {
         try
         {
-
-            listener.lookupTransform("*****replace planning frame******", "/tag_link", ros::Time(0), transform);
+            listener.waitForTransform("/base_link", "/tag_0", ros::Time(0), ros::Duration(9.0));
+            listener.lookupTransform("/base_link", "/tag_0", ros::Time(0), transform);
         }
         catch (tf::TransformException &ex)
         {
@@ -30,7 +30,16 @@ int main(int argc, char **argv)
             ros::Duration(1.0).sleep();
             continue;
         }
-		transformStampedTFToMsg(transform,tf_msg);
+        
+        transformStampedTFToMsg(transform,tf_msg);
+		
+        msg.position.x=tf_msg.transform.translation.x;
+        msg.position.y=tf_msg.transform.translation.y;
+        msg.position.z=tf_msg.transform.translation.z;
+        msg.orientation.x=tf_msg.transform.rotation.x;
+        msg.orientation.y=tf_msg.transform.rotation.y;
+        msg.orientation.z=tf_msg.transform.rotation.z;
+        msg.orientation.w=tf_msg.transform.rotation.w;
         
 		pub.publish(msg);
         ros::spinOnce();

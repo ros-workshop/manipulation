@@ -4,7 +4,7 @@
 <!--param name="apriltag" command="$(find xacro)/xacro inorder '$(find apriltags_gazebo)/urdf/apriltag.urdf.xacro'"/-->
 <env name="GAZEBO_MODEL_PATH" value="$(find apriltags_gazebo)/models/"/>
   <!-- push robot_description to factory and spawn robot in gazebo -->
-<node name="table_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-database fire_hydrant -gazebo -model cafe_table -x 0.95 -y -0.095 -z -0.3" />
-<node name="apriltag_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-gazebo -file '$(find apriltags_gazebo)/models/apriltag/model.sdf' -model apriltag -x 0.82 -y -0.072 -z 0.74 " />
+<node name="apriltag_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -file '$(find apriltags_gazebo)/models/new_apriltag/model.urdf' -model apriltag -x 0.82 -y -0.072 -z 0.44 " />
+<node name="stand_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-sdf -file '$(find apriltags_gazebo)/models/STAND/model.sdf' -model stand -x 0.82 -y -0.072 -z 0.2 " />
 
 </launch>

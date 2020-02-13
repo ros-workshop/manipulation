@@ -21,6 +21,7 @@
 #include <control_msgs/FollowJointTrajectoryGoal.h>
 #include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Pose.h>
+#include <tf/transform_broadcaster.h>
 // start of the subscribe class//
 using namespace tf;
 
