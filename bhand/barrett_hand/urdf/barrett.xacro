@@ -597,19 +597,19 @@
       <!-- a formal implementation of grasp hack in gazebo with fixed joint -->
       <gripper name="barrett_hand">
         <grasp_check>
-          <attach_steps>2</attach_steps>
+          <attach_steps>1</attach_steps>
           <detach_steps>20</detach_steps>
           <min_contact_count>1</min_contact_count>
         </grasp_check>
         <gripper_link>finger_3_dist_link</gripper_link>
-        <gripper_link>finger_1_prox_link</gripper_link>
+        <!--gripper_link>finger_1_prox_link</gripper_link>
         <gripper_link>finger_2_prox_link</gripper_link>
         <gripper_link>finger_1_dist_link</gripper_link>
         <gripper_link>finger_2_dist_link</gripper_link>
         <gripper_link>finger_1_med_link</gripper_link>
         <gripper_link>finger_2_med_link</gripper_link>
         <gripper_link>finger_3_med_link</gripper_link>
-        <palm_link>barrett_base_link</palm_link>
+        <palm_link>barrett_base_link</palm_link-->
         <contact_topic>__default_topic__</contact_topic>
       </gripper>
 
