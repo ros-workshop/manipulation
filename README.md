@@ -310,6 +310,13 @@ You can now go to the bottom most tab *Configuration Files*. This is where we ge
 **ACTION**
 Select `config/ur5.srdf` and click Generate Package.
 
+
+Add the following lines in the new `config/ur5.srdf`
+
+`   <disable_collisions link1="simple_gripper_base"link2="wrist_3_link" reason="Adjacent" />`
+    
+`<disable_collisions link1="simple_gripper_base" link2="ee_link" reason="Adjacent" />`
+
 You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch`.
 
 You should now be able to plan a path and see the robot move in Gazebo.
