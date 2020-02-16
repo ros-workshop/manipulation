@@ -181,33 +181,51 @@ int main(int argc, char **argv)
 
 	signal(SIGINT, SigintHandler);
 
+	
 	ros::init(argc, argv, "object_grasp_server");
+	
 	ros::NodeHandle node_handle;
+	
 	ros::AsyncSpinner spinner(2);
+	
 	spinner.start();
+	
 	ros::Rate loop_rate(1);
+	
 	ros::NodeHandle n;
+	
 	geometry_msgs::Pose temp_pose; //temporary pose to check when the same target is receive
+	
 	GraspTag grasObj;			   // instance of the class GraspTag
 
 	moveit::planning_interface::MoveGroupInterface::Plan my_plan;				 // plan containing the trajectory
+	
 	static const std::string PLANNING_GROUP = "manipulator";					 // planning group
+	
 	moveit::planning_interface::PlanningSceneInterface planning_scene_interface; // planning interface
+	
 	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP);			 // planning group
+	
 	arm.setPlannerId("RRTConnect");
+	
 	//can be modified as desired
 	arm.setGoalTolerance(0.0001);
+	
 	arm.setPlanningTime(5.0);
 	// end of declarations
 
 	ROS_INFO("Reference frame: %s", arm.getPlanningFrame().c_str());
+	
 	ROS_INFO("Reference frame: %s", arm.getEndEffectorLink().c_str());
 
 	temp_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
 
 	ROS_INFO("Pose:HOME");
+	
 	arm.setNamedTarget("home");
+	
 	arm.plan(my_plan); // check if plan succeded
+	
 	arm.move();
 
 	sleep(4.0);
@@ -217,17 +235,23 @@ int main(int argc, char **argv)
 	while (ros::ok) // keep on running until stoped
 	{
 		grasObj.DontExecuteGrasp();
+
 		ros::topic::waitForMessage<geometry_msgs::Pose>("/tag_pose");
+
 		grasObj.CloseGripper(0.0);
+
 		ROS_INFO("tag detected");
 
 		ROS_INFO("Ready for Grasp service call");
+
 		while (!grasObj.ExecuteGrasp() && !ros::isShuttingDown())
 		{
 			//wait
 			loop_rate.sleep();
 		}
+
 		ROS_INFO("Grasp server active");
+
 		temp_pose = grasObj.getTarget(); //set the desired pose to the position of the cube
 
 		ROS_INFO("Tag location:\n x:%lf \n c:%lf \n z:%lf", temp_pose.position.x, temp_pose.position.y, temp_pose.position.z);
@@ -247,7 +271,6 @@ int main(int argc, char **argv)
 
 		arm.move();
 
-		//sleep(5.0);
 		sleep(1.0);
 
 		/*************ADD SOME CODE HERE (START)**********
@@ -260,19 +283,23 @@ int main(int argc, char **argv)
 		************ADD SOME CODE HERE (END)**************/
 
 		sleep(1.0);
+
 		ROS_INFO("Closing Gripper");
 
 		grasObj.CloseGripper(0.25); // closing gripper
 
-		//sleep(2.0);
 		sleep(1.0);
+
 		//grasObj.AttachGripper(); //attaching object
+
 		ROS_INFO("Attaching objects");
 
 		temp_pose.position.z += 0.2; //raising cube in the air
 
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+
 		arm.plan(my_plan); // check if plan succeded
+
 		arm.move();
 
 		// moving object to next stand
@@ -289,19 +316,28 @@ int main(int argc, char **argv)
 		sleep(1.0);
 
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+
 		arm.plan(my_plan); // check if plan succeded
+
 		arm.move();
+
 		sleep(1.0);
 
 		ROS_INFO("Detaching Object");
+
 		grasObj.DetachGripper(); // Detaching object
+
 		grasObj.CloseGripper(0.0);
+
 		sleep(1);
 
 
 		ROS_INFO("Moving to Home");
-		arm.setNamedTarget("home"); // This is needed so that the robot arm will not block the LIDAR
+
+		arm.setNamedTarget("home"); 
+
 		arm.plan(my_plan);
+
 		arm.move();
 
 		ROS_INFO("finished motion plan");
