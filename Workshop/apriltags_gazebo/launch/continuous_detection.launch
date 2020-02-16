@@ -1,20 +1,19 @@
 <launch>
-  <arg name="launch_prefix" default="" /> <!-- set to value="gdbserver localhost:10000" for remote debugging -->
   <arg name="node_namespace" default="apriltag_ros_continuous_node" />
   <arg name="camera_name" default="/kinect2" />
-  <arg name="camera_frame" default="camera" />
+  <arg name="camera_frame" default="/kinect2_rgb_optical_frame" />
   <arg name="image_topic" default="rgb/image_raw" />
-  <arg name="image_transport topic" default="compressed" />
+  <arg name="image_transport_topic" default="compressed" />
 
   <!-- Set parameters -->
 
   <rosparam command="load" file="$(find apriltags_gazebo)/config/settings.yaml" ns="$(arg node_namespace)" />
   <rosparam command="load" file="$(find apriltags_gazebo)/config/tags.yaml" ns="$(arg node_namespace)" />
 
-  <node pkg="apriltag_ros" type="apriltag_ros_continuous_node" name="$(arg node_namespace)" clear_params="true" output="screen" launch-prefix="$(arg launch_prefix)" >
+  <node pkg="apriltag_ros" type="apriltag_ros_continuous_node" name="$(arg node_namespace)" clear_params="true" output="screen" >
     
     <remap from="image_rect" to="$(arg camera_name)/$(arg image_topic)" />
-    <remap from="camera_info" to="/ir/camera_info" />
+    <remap from="/kinect2/rgb/camera_info" to="/kinect2/depth/camera_info" />
 
     <param name="camera_frame" type="str" value="$(arg camera_frame)" />
     <param name="publish_tag_detections_image" type="bool" value="true" />      <!--default: false-->

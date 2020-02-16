@@ -1,26 +1,9 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
-//#include "std_msgs/Bool.h"
-//#include <iostream>
-//#include <math.h>
-//#include <cmath>
-//#include <vector>
-//#include <stdlib.h>
-//#include <std_msgs/Int32.h>
 #include <std_msgs/Bool.h>
 #include <std_srvs/SetBool.h>
 #include "ros/ros.h"
-//#include "std_msgs/String.h"
-//#include "geometry_msgs/Point.h"
-//#include <vector>
-//#include <string>
-//#include <trajectory_msgs/JointTrajectoryPoint.h>
-//#include <std_msgs/Float64MultiArray.h>
-//#include <control_msgs/FollowJointTrajectoryAction.h>
-//#include <control_msgs/FollowJointTrajectoryGoal.h>
-//#include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Pose.h>
-// These messages are used to manually publish cmd_vel
 #include <geometry_msgs/Twist.h>
 #include <tf/transform_broadcaster.h>
 #include <signal.h>
@@ -85,7 +68,7 @@ GraspTag::GraspTag()
 	detach_tag_client = n.serviceClient<gazebo_ros_link_attacher::Attach>("/link_attacher_node/detach");
 	DontExecuteGrasp();
 	_attach_srv.request.model_name_1 = "robot";
-	_attach_srv.request.link_name_1 = "simple_gripper_right_follower";
+	_attach_srv.request.link_name_1 = "wrist_3_link";
 	_attach_srv.request.model_name_2 = "apriltag";
 	_attach_srv.request.link_name_2 = "my_box";
 
@@ -117,7 +100,7 @@ void GraspTag::setPoseCallback(const geometry_msgs::Pose::ConstPtr& pose)
 {
 	target_pose.position = pose->position;
 	target_pose.orientation = createQuaternionMsgFromRollPitchYaw(1.57,0, 0);
-	ROS_INFO("dsds");
+
 }
 
 geometry_msgs::Pose GraspTag::getTarget()
@@ -156,10 +139,9 @@ void GraspTag::CloseGripper(float angle){
 	ros::Time now = ros::Time::now();
 	ros::Time  then = ros::Time::now();
 
-	while((then-now).toSec()<5.0){
+	while((then-now).toSec()<1.0){
 		gripper_grasp_pub.publish(_gripper_angle_traj);
 		then = ros::Time::now();
-		ROS_INFO("%lf",(then-now).toSec());
 		_loop_rate.sleep();
 	}
 	ROS_INFO("Gripper command completed");
@@ -199,7 +181,7 @@ int main(int argc, char **argv)
 	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP);			 // planning group
 	arm.setPlannerId("RRTConnect");
 	//can be modified as desired
-	arm.setGoalTolerance(0.05);
+	arm.setGoalTolerance(0.0001);
 	arm.setPlanningTime(5.0);
 	// end of declarations
 
@@ -214,8 +196,6 @@ int main(int argc, char **argv)
 	arm.setNamedTarget("home");
 	arm.plan(my_plan); // check if plan succeded
 	arm.move();
-	
-	/* Open the gripper  */
 
 	sleep(4.0);
 
@@ -227,19 +207,24 @@ int main(int argc, char **argv)
 	 
 	while (ros::ok) // keep on running until stoped
 	{
-		ROS_INFO("4");
 		grasObj.DontExecuteGrasp();
 		ros::topic::waitForMessage<geometry_msgs::Pose>("/tag_pose");
 		grasObj.CloseGripper(0.0);
 		ROS_INFO("tag detected");
 
+		ROS_INFO("Ready for Grasp service call");
 		while(!grasObj.ExecuteGrasp() && !ros::isShuttingDown()){
 			//wait
 			loop_rate.sleep();
 		}
+		ROS_INFO("Grasp server active");
 		temp_pose = grasObj.getTarget(); //set the desired pose to the position of the cube
-		temp_pose.position.z += 0.2;	  //offset by .19 meters in the z axis
-		temp_pose.position.x += 0.0;
+		
+		ROS_INFO("Tag location:\n x:%lf \n c:%lf \n z:%lf",temp_pose.position.x,temp_pose.position.y,temp_pose.position.z);
+		
+		temp_pose.position.z += 0.25;	  //offset by .25 meters in the z axis
+		temp_pose.position.x -= 0.05;
+		temp_pose.position.y += 0.05;
 		
 
 		temp_pose.orientation.w= 0.707;
@@ -247,47 +232,59 @@ int main(int argc, char **argv)
 		temp_pose.orientation.y= 0.707;
 		temp_pose.orientation.z= 0.0;   // and pointed straight down
 
-		ROS_INFO("5");
+	
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
-		ROS_INFO("6");
+
 		arm.plan(my_plan); // check if plan succeded
-		ROS_INFO("7");
+
 		arm.move();
-		ROS_INFO("8");
-
-
-		 grasObj.CloseGripper(0.6);
-	    /*
-		if move succeeded attach the tag
-		*/
 
 		sleep(5.0);
-		grasObj.AttachGripper();
+
+		temp_pose.position.z -= 0.08; // move down towards the cube
+		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+
+		arm.plan(my_plan); // check if plan succeded
+
+		arm.move();
+		sleep(1.0);
+		ROS_INFO("Closing Gripper");
 		
-		temp_pose.position.z += 0.13;//raising cube in the air
+		grasObj.CloseGripper(0.25); // closing gripper
+	
+
+
+		sleep(2.0);
+		grasObj.AttachGripper(); //attaching object
+		ROS_INFO("Attaching objects");
+		
+		temp_pose.position.z += 0.2;//raising cube in the air
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
 		arm.move();
 
+		// moving object to next stand
 
-		arm.setJointValueTarget("shoulder_pan_joint",-2.88);//moving hand to the back of the husky		
-		arm.setJointValueTarget("shoulder_lift_joint",0.54);	
-		arm.setJointValueTarget("elbow_joint",-0.51);	
-		arm.setJointValueTarget("wrist_1_joint",-0.17);	
-		arm.setJointValueTarget("wrist_2_joint",1.34);	
-		arm.setJointValueTarget("wrist_3_joint",-6.70);
-		arm.plan(my_plan);
+		temp_pose.position.x;
+		temp_pose.position.y-=0.7;
+		temp_pose.position.z-=0.2;
+		ROS_INFO("Moving to new position");
+		sleep(1.0);
+
+		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+		arm.plan(my_plan); // check if plan succeded
 		arm.move();
-			
-		grasObj.DetachGripper();
+		sleep(1.0);
+		ROS_INFO("Detaching Object");
+		grasObj.DetachGripper(); // Detaching object
 		
-		sleep(12);
+		sleep(3);
+		ROS_INFO("Moving to Home");
 		arm.setNamedTarget("home");// This is needed so that the robot arm will not block the LIDAR
 		arm.plan(my_plan);
 		arm.move();				
 
 		ROS_INFO("finished motion plan");
-		//HUSKY.drive_backwards();
 
 		
 		grasObj.setSuccess(true);

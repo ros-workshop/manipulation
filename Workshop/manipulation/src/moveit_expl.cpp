@@ -1,28 +1,15 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
-#include <moveit_msgs/DisplayRobotState.h>
-#include <moveit_msgs/DisplayTrajectory.h>
-#include "std_msgs/Bool.h"
-#include <iostream>
-#include <math.h>
-#include <cmath>
-#include <vector>
-#include <stdlib.h>
-#include <std_msgs/Int32.h>
 #include <std_msgs/Bool.h>
+#include <std_srvs/SetBool.h>
 #include "ros/ros.h"
-#include "std_msgs/String.h"
-#include "geometry_msgs/Point.h"
-#include <vector>
-#include <string>
-#include <trajectory_msgs/JointTrajectoryPoint.h>
-#include <std_msgs/Float64MultiArray.h>
-#include <control_msgs/FollowJointTrajectoryAction.h>
-#include <control_msgs/FollowJointTrajectoryGoal.h>
-#include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Twist.h>
 #include <tf/transform_broadcaster.h>
-// start of the subscribe class//
+#include <signal.h>
+#include <trajectory_msgs/JointTrajectory.h>
+#include <trajectory_msgs/JointTrajectoryPoint.h>
+#include <gazebo_ros_link_attacher/Attach.h>
 using namespace tf;
 
 int main(int argc, char **argv)
@@ -37,27 +24,17 @@ int main(int argc, char **argv)
 	geometry_msgs::Pose temp_pose; //temporary pose to check when the same target is receive
 
 	moveit::planning_interface::MoveGroupInterface::Plan my_plan; // plan containing the trajectory
-	static const std::string PLANNING_GROUP = "abb_arm";		  // planning group
-	static const std::string PLANNING_GROUP2 = "barrett_hand";
+	static const std::string PLANNING_GROUP = "manipulator";		  // planning group
 	moveit::planning_interface::PlanningSceneInterface planning_scene_interface; // planning interface
 	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP);			 // planning group
-	moveit::planning_interface::MoveGroupInterface hand(PLANNING_GROUP2);		 // planning group
 	arm.setPlannerId("RRTConnectkConfigDefault");
 	//can be modified as desired
 	arm.setGoalTolerance(0.001);
 	arm.setPlanningTime(20.0);
-	//hand.setPlannerId("LBKPIECEkConfigDefault");
-	hand.setPlannerId("RRTConnectkConfigDefault");
-	//can be modified as desired
-	hand.setGoalJointTolerance(0.1);
-	hand.setPlanningTime(20.0);
 	//arm.setPlanningTime(10.0);
 	//arm.setPlanningTime(15.0);
 
 	// end of declarations
-
-	ros::Publisher display_publisher = node_handle.advertise<moveit_msgs::DisplayTrajectory>("/move_group/display_planned_path", 1, true); // to display path in Rviz
-	moveit_msgs::DisplayTrajectory display_trajectory;
 
 	ROS_INFO("Reference frame: %s", arm.getPlanningFrame().c_str());
 	ROS_INFO("Reference frame: %s", arm.getEndEffectorLink().c_str());

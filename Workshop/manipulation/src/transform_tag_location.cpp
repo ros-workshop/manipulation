@@ -21,8 +21,8 @@ int main(int argc, char **argv)
     {
         try
         {
-            listener.waitForTransform("/base_link", "/tag_0", ros::Time(0), ros::Duration(9.0));
-            listener.lookupTransform("/base_link", "/tag_0", ros::Time(0), transform);
+            listener.waitForTransform("/world", "/tag_0", ros::Time(0), ros::Duration(9.0));
+            listener.lookupTransform("/world", "/tag_0", ros::Time(0), transform);
         }
         catch (tf::TransformException &ex)
         {
