@@ -239,7 +239,8 @@ int main(int argc, char **argv)
 
 		arm.move();
 
-		sleep(5.0);
+		//sleep(5.0);
+		sleep(1.0);
 
 		temp_pose.position.z -= 0.08; // move down towards the cube
 		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
@@ -254,7 +255,8 @@ int main(int argc, char **argv)
 	
 
 
-		sleep(2.0);
+		//sleep(2.0);
+		sleep(1.0);
 		grasObj.AttachGripper(); //attaching object
 		ROS_INFO("Attaching objects");
 		
@@ -277,8 +279,8 @@ int main(int argc, char **argv)
 		sleep(1.0);
 		ROS_INFO("Detaching Object");
 		grasObj.DetachGripper(); // Detaching object
-		
-		sleep(3);
+		grasObj.CloseGripper(0.0);
+		sleep(1);
 		ROS_INFO("Moving to Home");
 		arm.setNamedTarget("home");// This is needed so that the robot arm will not block the LIDAR
 		arm.plan(my_plan);

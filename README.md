@@ -1,5 +1,7 @@
 # Manipulation
 
+![Alt Text](./resources/images/manipulation.png)
+
 **Goal:**
 
 The session aims to familiaries you with one of the most crucial aspects of modern robotics, *manipulation*.
