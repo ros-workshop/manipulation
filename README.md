@@ -1,6 +1,6 @@
 # Manipulation
 
-![Alt Text](./resources/images/manipulation.png)
+![Alt Text](./resources/images/manipulation.gif)
 
 **Goal:**
 
