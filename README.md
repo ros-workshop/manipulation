@@ -10,7 +10,7 @@ Whenever a robots physically interacts with its surrounding and modifies its env
 
 **What are the challenges of robotic manipulation?**
 + *Path Planning:* Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120), [UR5](https://www.scottautomation.com/products/ur5-universal-robot/)). An arm often has between 5 and 7 Dof. Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
-+ *Grasping:* Once the arm knows how to travel from one place to another, its time to actually grasping something. Grasping in a vast and vibrant research topic mostly because how challenigng it be be for robots to find suitable grasp poses fro everyday objects.
++ *Grasping:* Once the arm knows how to travel from one place to another, its time to actually grasping something. Grasping in a vast and vibrant research topic mostly because how challenigng it can be for robots to find suitable grasp poses for everyday objects.
 
 
 **What tools do we have to solve this problem?**
@@ -41,32 +41,39 @@ git clone https://github.com/ros-workshop/manipulation.git
 
 ### Dependencies
 
+First install [catkin tools](https://robotics.stackexchange.com/questions/16604/ros-catkin-make-vs-catkin-build) `sudo apt-get install python-catkin-tools` which allows to build the workspace in a more modular fashion.
+
+Second, installed the depenencies stipulated by the `package.xml`
+`rosdep install --from-paths src --ignore-src -r -y`
+
+if you do not have `rosdep`, install it. 
+
+
 There are quite a few packages that need to be installed for the session:
 
 + moveit_ros
 + moveit_core
-+ apriltag2_ros
++ apriltag_ros
 + image_geometry
 + husky_description
 + controller_manager
 + gazebo_ros_control
-+ abb_resources
++ abb_resources # for next session
++ ros_control
 
 <details><summary>Click for Hint</summary>
   
-You can `sudo apt-get install` almost all of these packages but you will have to clone [apriltag2_ros](https://github.com/dmalyuta/apriltags2_ros)
+You can `sudo apt install` almost all of these packages.
 
 <br/>
 
 <details><summary>Click to cheat!</summary>
   
 ```
-sudo apt install ros-kinetic-moveit-ros ros-kinetic-moveit-core \
-                 ros-kinetic-image-geometry ros-kinetic-husky-description \
-                 ros-kinetic-controller-manager ros-kinetic-gazebo-ros-control \
-                 ros-kinetic-abb-resources
-cd ~/workshop_ws/src
-git clone https://github.com/dmalyuta/apriltags2_ros.git
+sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core \
+                 ros-melodic-image-geometry ros-melodic-husky-description \
+                 ros-melodic-controller-manager ros-melodic-gazebo-ros-control \
+                 ros-melodic-abb-resources ros-melodic-apriltag*
 ```
 
 </details>
@@ -81,19 +88,7 @@ Launch the robot in gazebo.
   
 <p>
   
-```
-workshop_ws
-│   devel
-│   build   
-└───src
-│   │   pkg1
-│   │   pkg2
-│   └───robot_pkg
-│       │   robot_description
-|       └───robot_gazebo
-|           |   robot_spawn.launch
-|           |   robot.launch
-```
+We are afther a UR5 (Universal robot) robotic arm. All you need is in the `Worshop` directory 
 
 </p> 
 
@@ -102,13 +97,13 @@ workshop_ws
 
 You should see something like this:
 
-![robot_gazebo](./resources/images/gazebo_robot)
+![robot_gazebo](./resources/images/ur5_gazebo.png)
 
-The arm and fingers should stand up straight and be static.
+The arm, gripper and camera should stand up straight and be static.
 
 ### Controllers
 
-Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a mobile robotic arm with an end-effector? Make sure the controllers have loaded appropriatly. 
+Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a robotic arm with an end-effector? Make sure the controllers have loaded appropriatly. 
 
 **ACTION**
 Check which controllers are loaded.
@@ -118,13 +113,13 @@ Check which controllers are loaded.
 <p>
 There should be a least 3 controllers.
   
-+ Mobile Base Controller
 + Arm Controller
-+ Hand Controller
++ Gripper Controller
++ Joint State Controller
 
 There is a useful rqt plugin to check your controllers 
 
-![controller_manager](./resources/images/controller_manager)
+![controller_manager](./resources/images/controller_list.png)
 
 </p> 
 
@@ -133,14 +128,17 @@ There is a useful rqt plugin to check your controllers
 Install and run [rqt_controller_manager](http://wiki.ros.org/rqt_controller_manager)
 
 ```
-sudo apt install ros-kinetic-rqt-controller-manager  
-source /opt/ros/kinetic/setup.bash 
+sudo apt install ros-melodic-rqt-controller-manager  
+source /opt/ros/melodic/setup.bash 
 rosrun rqt_controller_manager rqt_controller_manager 
 ```
+if you get an exception when running it, try to fix it with a `try/except` combination in the original rqt package.
 
 </details>
 </details>
 <br>
+
+----------------------------------------------------------
 
 Now to see the controllers in action, jog the arm and fingers manually.
 
@@ -153,15 +151,15 @@ Move the arm and fingers.
 
 There is an rqt plugin for that!
 
-![traj_controller](./resources/images/traj_controller)
+![traj_controller](./resources/images/traj_controller.png)
 
 <details><summary>Click to cheat!</summary>
 
 Install and run [rqt_joint_trajectory_controller](http://wiki.ros.org/rqt_joint_trajectory_controller)
 
 ```
-sudo apt install ros-kinetic-rqt-joint-trajectory*
-source /opt/ros/kinetic/setup.bash 
+sudo apt install ros-melodic-rqt-joint-trajectory*
+source /opt/ros/melodic/setup.bash 
 rosrun rqt_joint_trajectory_controller rqt_joint_trajectory_controller
 ```
 
@@ -244,9 +242,9 @@ roslaunch husky_abb_moveit_config moveit_planning_execution_gazebo.launch
 </details>
 <br>
 
-An rviz window will pop up. In Rviz, add the Motion Planning plugin. Once added you should have something like this:
+Then launch Rviz and load the `MotionPlanning` pluggin.
 
-![rviz1](./resources/images/rviz1)
+![rviz1](./resources/images/rviz.png)
 
 In the *planning* tab of the motion planning pluggin, you can click *update* to give the arm a random valid goal and click *plan and execute*. You should see the robot planning the path and move.... 
 
@@ -285,9 +283,11 @@ Launch the moveit-setup assistant and load the brocken moveit configuration file
 
 Once loaded you should see a model of your robot appear on the right:
 
-![setup_assistant](./resources/images/setup_assistant)
+![setup_assistant](./resources/images/moveit_setup_assitant1.png)
 
 Now take a look at the *Self-Collision* tab (our issue had to do with link collisions). You will notice that there are no collisions defined. Go ahead a generate a collision matrix. 
+
+**NOTE: The gripper is not visible in the robot model**
 
 **ACTION**
 Generate a collision matrix.
@@ -295,28 +295,28 @@ Generate a collision matrix.
 Two other important tabs in the setup assistant are *Planning Groups* and *End Effectors*. The first one is where we define the joints and links the hand and arm will use for planning. The name are the group are important to know. 
 
 **ACTION**
-Inspect how the arm and hand group are formed in the setup assistant.
+Inspect how the arm group is formed in the setup assistant.
 
-The *End Effectors* tab is where we difine the end-effector of our robot. This crucial when we want to grasp objects. 
+The *End Effectors* tab is where we difine the end-effector of our robot. It won't be used this time.
 
 If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
 You can now go to the bottom most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf*  file. Before generating the package make sure you select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are.
 
-![set_assistant2](./resources/images/set_assistant2)
+![moveit_set_assistant2.png](./resources/images/moveit_setup_assistant2.png)
 
 **ACTION**
-Select `config/husky_ur5.srdf` and click Generate Package.
+Select `config/ur5.srdf` and click Generate Package.
 
-You can now leave the setup assistant and retry launching `moveit_planning_execution_gazebo.launch`.
+You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch`.
 
 You should now be able to plan a path and see the robot move in Gazebo.
-
+Spend some time to use the `Motion planning` rviz pluggin
 ## Using Moveit
 
 **A quick example a giving a goal to Moveit in a .cpp file**
 
-```rosrun husky_abb_manipulation  moveit_expl```
+```rosrun manipulation moveit_expl```
 
 **ACTION**
 Inpect this file, see what it does and how. You will need this knowledge later.
@@ -324,28 +324,42 @@ Inpect this file, see what it does and how. You will need this knowledge later.
 
 Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz. It is time to create a application for our arm. A common one is to grasp an object which position is determined using sensors. Here we will be using an image and apriltags.
 
-Start by cloning the `apriltag2_ros` pkg in your `src` directory.
-
-Then launch the following two files: `apriltag_spawn` and `tag_detection`.
 
 **ACTION**
-Clone `apriltag2_ros` and launch `apriltag_spawn` and `tag_detection`.
+Spawn an apriltag in gazebo and start the detectection.
 
 <details><summary>Click for Hint</summary>
   
 <p>
+  
 
-```
- roslaunch apriltags_gazebo apriltag_spawn.launch
- roslaunch apriltags_gazebo tag_detection.launch 
+`roslaunch apriltags_gazebo apriltag_spawn.launch`
+`roslaunch apriltags_gazebo continuous_detection.launch`
 
-```  
+  
+
 </p> 
 
 </details>
 <br>
 
-Can you detect the tag? Look in Rviz or at the `/tag_detections` topic.
+Now view this detection image on the topic `/tag_detections_image/compressed`
+
+
+<details><summary>Click for Hint</summary>
+  
+<p>
+  
+
+`rosrun rqt_image_view rqt_image_view "/tag_detections_image/compressed"`
+
+  
+
+</p> 
+
+</details>
+<br>
+
 
 **Applicaiton = Integration**
 
@@ -364,7 +378,7 @@ What we want is to grasp the object with the tag
  
  ### Transform listener
  
- Have a look at the node `transform_tag_location.cpp` located in `husky_abb_manipulation`.
+ Have a look at the node `transform_tag_location.cpp` located in `manipulation`.
  
  Run this node and see what it does. Modify it so we obtain a `geometry_msgs/Pose` out of it.
  
@@ -403,11 +417,12 @@ We now have all 3 modules required. Make sure that you have module 1 and 2 runni
 To have everything up at running you need to have launched the following:
 
 ```
-roslaunch husky_abb_gazebo husky_abb.launch
-roslaunch husky_abb_moveit_config  moveit_planning_execution_gazebo.launch 
-roslaunch apriltags_gazebo apriltag_spawn.launch 
-roslaunch apriltags_gazebo tag_detection.launch 
-rosrun husky_abb_manipulation transform_tag_location 
+roslaunch ur_gazebo ur5_joint_limited.launch
+roslaunch husky_abb_moveit_config  
+roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch 
+rroslaunch apriltags_gazebo apriltag_spawn.launch 
+roslaunch apriltags_gazebo continuous_detection.launch  
+rosrun manipulation transform_tag_location 
 ```
 
 </p> 
@@ -415,32 +430,55 @@ rosrun husky_abb_manipulation transform_tag_location
 </details>
 <br>
 
-Now run `husky_abb_grab_object`. You should see the end-effector move to the front of the object. Modify the code to make the hand grasp of object and drop it on the husky base
+**Note: It is about time to create a launch file**
 
-**ACTION**
-Modify `husky_abb_grab_object.cpp` to make hand grasp the object and that arm drop it on the husky base.
+Now run `object_grasp_server`. You should see the arm move to a home position. In the terminal, you should see `"tag detected"` if all the required nodes are running. 
+
+As it name indicate, `object_grasp_server` is a serval waiting for a request. Find out what the name of the service is.
 
 <details><summary>Hint</summary>
   
 <p>
 
-Create a MoveGroup for the barrette hand .
-
-Use joint targets to close the hand.
-
-The Object will stick to the hand after a few seonds of contact.
+Use `rosnode info`
 
 </p> 
 
 </details>
 <br>
 
+**ACTION**
+Call the service from a terminal and observe the robots behaviour. 
 
-## Goals Strech
 
-**Goal:** make the arm grasp the object whislt avoiding the environment
+**ACTION**
+Modify `object_grasp_server.cpp` to make hand grasp the object and that arm drop it on the second stand.
 
-Restart the Gazebo simulation and launch `obsatcle_apriltag_spawn`. Grasp the object without hittting obstacles.
+<details><summary>Hint</summary>
+  
+<p>
+
+Refer to the previous example `moveit_expl.cpp`
+
+/*################Place your code here ##############*/
+Indicates where to add code
+
+Some line only need to be commented out
+
+</p> 
+
+</details>
+<br>
+
+**Note: We are tricking gazebo to attach the object to the gripper**
+
+**Note: The gripper model is very sensitiv and might break down if it hit the environment. In this case, restart the simulation**
+
+## Strech Goals 
+
+**Goal:** make the arm grasp the object while avoiding the environment
+
+Restart the Gazebo simulation , move the arm to home positionm and launch `obsatcle_apriltag_spawn`. Grasp the object without hittting obstacles.
 
 
 <details><summary>Hint</summary>
@@ -451,7 +489,7 @@ Moveit will do the obstacle avoidance for you provided an OctoMap
 
 An OctoMap can be created using a depth camera
 
-Start the moveit sensor manager (only a few lines to comment in the right file)
+Consult the [moveit tutorial](http://docs.ros.org/melodic/api/moveit_tutorials/html/doc/perception_pipeline/perception_pipeline_tutorial.html) 
 
 </p> 
 

@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 	temp_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
 
     /*pose goal */
-    temp_pose.position.x +=0.1;
+    temp_pose.position.x -=0.1;
     arm.setPoseTarget(temp_pose);
     arm.plan(my_plan); 
 	arm.move();
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
 
     /*joint goal */
-	arm.setJointValueTarget("abb2_joint_1",-1.57);
+	arm.setJointValueTarget("shoulder_pan_joint",-1.57);
 	arm.plan(my_plan); 
 	arm.move();
 
