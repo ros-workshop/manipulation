@@ -12,8 +12,6 @@
 #include <gazebo_ros_link_attacher/Attach.h>
 // start of the GraspTag class//
 
-
-
 /*************ADD SOME CODE HERE (START)**********
 |
 |
@@ -181,51 +179,50 @@ int main(int argc, char **argv)
 
 	signal(SIGINT, SigintHandler);
 
-	
 	ros::init(argc, argv, "object_grasp_server");
-	
-	ros::NodeHandle node_handle;
-	
-	ros::AsyncSpinner spinner(2);
-	
-	spinner.start();
-	
-	ros::Rate loop_rate(1);
-	
-	ros::NodeHandle n;
-	
-	geometry_msgs::Pose temp_pose; //temporary pose to check when the same target is receive
-	
-	GraspTag grasObj;			   // instance of the class GraspTag
 
-	moveit::planning_interface::MoveGroupInterface::Plan my_plan;				 // plan containing the trajectory
-	
-	static const std::string PLANNING_GROUP = "manipulator";					 // planning group
-	
+	ros::NodeHandle node_handle;
+
+	ros::AsyncSpinner spinner(2);
+
+	spinner.start();
+
+	ros::Rate loop_rate(1);
+
+	ros::NodeHandle n;
+
+	geometry_msgs::Pose temp_pose; //temporary pose to check when the same target is receive
+
+	GraspTag grasObj; // instance of the class GraspTag
+
+	moveit::planning_interface::MoveGroupInterface::Plan my_plan; // plan containing the trajectory
+
+	static const std::string PLANNING_GROUP = "manipulator"; // planning group
+
 	moveit::planning_interface::PlanningSceneInterface planning_scene_interface; // planning interface
-	
-	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP);			 // planning group
-	
+
+	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP); // planning group
+
 	arm.setPlannerId("RRTConnect");
-	
+
 	//can be modified as desired
 	arm.setGoalTolerance(0.0001);
-	
+
 	arm.setPlanningTime(5.0);
 	// end of declarations
 
 	ROS_INFO("Reference frame: %s", arm.getPlanningFrame().c_str());
-	
+
 	ROS_INFO("Reference frame: %s", arm.getEndEffectorLink().c_str());
 
 	temp_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
 
 	ROS_INFO("Pose:HOME");
-	
+
 	arm.setNamedTarget("home");
-	
+
 	arm.plan(my_plan); // check if plan succeded
-	
+
 	arm.move();
 
 	sleep(4.0);
@@ -331,10 +328,9 @@ int main(int argc, char **argv)
 
 		sleep(1);
 
-
 		ROS_INFO("Moving to Home");
 
-		arm.setNamedTarget("home"); 
+		arm.setNamedTarget("home");
 
 		arm.plan(my_plan);
 
