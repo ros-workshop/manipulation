@@ -72,12 +72,13 @@ You can `sudo apt install` almost all of these packages.
 <details><summary>Click to cheat!</summary>
   
 ```
-sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core \
-                 ros-melodic-image-geometry ros-melodic-husky-description \
-                 ros-melodic-controller-manager ros-melodic-gazebo-ros-control \
-                 ros-melodic-abb-resources ros-melodic-apriltag* \
-                 ros-melodic-gazebo-plugins ros-melodic-ros-control \
-                 ros-melodic-moveit ros-melodic-ros-controllers \
+sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core\
+                 ros-melodic-image-geometry ros-melodic-husky-description\
+                 ros-melodic-controller-manager ros-melodic-gazebo-ros-control\
+                 ros-melodic-abb-resources ros-melodic-apriltag-ros \
+                 ros-melodic-gazebo-plugins ros-melodic-ros-control\
+                 ros-melodic-moveit ros-melodic-ros-controllers\
+                 ros-melodic-apriltag
                  
 ```
 
