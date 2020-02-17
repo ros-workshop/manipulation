@@ -76,7 +76,7 @@ sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core \
                  ros-melodic-image-geometry ros-melodic-husky-description \
                  ros-melodic-controller-manager ros-melodic-gazebo-ros-control \
                  ros-melodic-abb-resources ros-melodic-apriltag*\
-                 ros-melodic-gazebo-plugins
+                 ros-melodic-gazebo-plugins ros-melodic-ros-control 
                  
 ```
 
