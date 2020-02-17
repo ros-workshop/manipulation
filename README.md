@@ -75,7 +75,9 @@ You can `sudo apt install` almost all of these packages.
 sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core \
                  ros-melodic-image-geometry ros-melodic-husky-description \
                  ros-melodic-controller-manager ros-melodic-gazebo-ros-control \
-                 ros-melodic-abb-resources ros-melodic-apriltag*
+                 ros-melodic-abb-resources ros-melodic-apriltag*\
+                 ros-melodic-gazebo-plugins
+                 
 ```
 
 </details>
