@@ -241,7 +241,7 @@ workshop_ws
 <details><summary>Click to cheat</summary>
 
 ```
-roslaunch husky_abb_moveit_config moveit_planning_execution_gazebo.launch                                                    
+ roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch                                                    
 ```
 
 </details>
