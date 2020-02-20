@@ -274,7 +274,7 @@ Install moveit-setup-assistant
 Utimatly, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
 
 **ACTION**
-Launch the moveit-setup assistant and load the brocken moveit configuration file.
+Launch the moveit-setup assistant and load the broken moveit configuration file.
 
 <details><summary>Click for Hint</summary>
   
@@ -303,7 +303,7 @@ Two other important tabs in the setup assistant are *Planning Groups* and *End E
 **ACTION**
 Inspect how the arm group is formed in the setup assistant.
 
-The *End Effectors* tab is where we difine the end-effector of our robot. It won't be used this time.
+The *End Effectors* tab is where we define the end-effector of our robot. It won't be used this time.
 
 If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
