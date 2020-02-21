@@ -89,7 +89,7 @@ sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core\
 
 **ACTION**
 Launch the robot in gazebo. 
-
+  
 <details><summary>Click for Hint</summary>
   
 <p>
@@ -109,7 +109,7 @@ The arm, gripper and camera should stand up straight and be static.
 
 ### Controllers
 
-Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a robotic arm with an end-effector? Make sure the controllers have loaded appropriatly. 
+Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a robotic arm with an end-effector? Make sure the controllers have loaded appropriately. 
 
 **ACTION**
 Check which controllers are loaded.
