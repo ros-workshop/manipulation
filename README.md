@@ -271,7 +271,7 @@ Have a look at the terminal where you've launched moveit from. You should see an
 **ACTION**
 Install moveit-setup-assistant
 
-Utimatly, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
+Ultimately, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
 
 **ACTION**
 Launch the moveit-setup assistant and load the broken moveit configuration file.
