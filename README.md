@@ -478,7 +478,7 @@ Some line only need to be commented out
 
 **Note: We are tricking gazebo to attach the object to the gripper**
 
-**Note: The gripper model is very sensitiv and might break down if it hit the environment. In this case, restart the simulation**
+**Note: The gripper model is very sensitive and might break down if it hit the environment. In this case, restart the simulation**
 
 ## Strech Goals 
 
