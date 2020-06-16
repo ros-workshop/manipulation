@@ -94,7 +94,7 @@ Launch the robot in gazebo.
   
 <p>
   
-We are afther a UR5 (Universal robot) robotic arm. All you need is in the `Worshop` directory 
+We are afther a UR5 (Universal robot) robotic arm. All you need is in the `Workshop` directory 
 
 </p> 
 
