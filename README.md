@@ -430,6 +430,8 @@ Don't worry about the orientation.
 
 The transform should be from the `planning frame` to the tag frame . You can find out the planning frame when running `moveit_expl`
 
+`rqt_tf_tree` adn `tf_monitor` might be useful
+
 </p> 
 
 </details>
@@ -455,9 +457,8 @@ To have everything up at running you need to have launched the following:
 
 ```
 roslaunch ur_gazebo ur5_joint_limited.launch
-roslaunch husky_abb_moveit_config  
 roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch 
-rroslaunch apriltags_gazebo apriltag_spawn.launch 
+roslaunch apriltags_gazebo apriltag_spawn.launch 
 roslaunch apriltags_gazebo continuous_detection.launch  
 rosrun manipulation transform_tag_location 
 ```
@@ -471,13 +472,13 @@ rosrun manipulation transform_tag_location
 
 Now run `object_grasp_server`. You should see the arm move to a home position. In the terminal, you should see `"tag detected"` if all the required nodes are running. 
 
-As it name indicate, `object_grasp_server` is a serval waiting for a request. Find out what the name of the service is.
+As it name indicate, `object_grasp_server` is a server waiting for a request. Find out what the name of the service is.
 
 <details><summary>Hint</summary>
   
 <p>
 
-Use `rosnode info`
+Use `rosnode info` or `rosservice list`
 
 </p> 
 
