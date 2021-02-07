@@ -270,7 +270,7 @@ Have a look at the terminal where you've launched moveit from. You should see an
 
 **<span style="color:red">Known Issue</span>**
 
-There seem to be a bug in `moveit_setup_assistant` latest release which causes to crash when loading a config for editing. Try the next few steps and if it crashes, skip to [this section](##<s>moveit_setup_assistant</s>)
+There seem to be a bug in `moveit_setup_assistant` latest release which causes to crash when loading a config for editing. Try the next few steps and if it crashes, skip to [this section](##moveit_setup_assistant)
 
 **ACTION**
 Install moveit-setup-assistant
@@ -322,7 +322,7 @@ Select `config/ur5.srdf` and click Generate Package.
 
 
 
-## <s>moveit_setup_assistant</s> 
+## moveit_setup_assistant 
 
 If the `moveit_setup_assistant` crashes, you can still modify the relevant files manually to generate to enable the collision matrix. Look for a semantic robot description file.
 
