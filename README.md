@@ -72,10 +72,14 @@ You can `sudo apt install` almost all of these packages.
 <details><summary>Click to cheat!</summary>
   
 ```
-sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core \
-                 ros-melodic-image-geometry ros-melodic-husky-description \
-                 ros-melodic-controller-manager ros-melodic-gazebo-ros-control \
-                 ros-melodic-abb-resources ros-melodic-apriltag*
+sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core\
+                 ros-melodic-image-geometry ros-melodic-husky-description\
+                 ros-melodic-controller-manager ros-melodic-gazebo-ros-control\
+                 ros-melodic-abb-resources ros-melodic-apriltag-ros \
+                 ros-melodic-gazebo-plugins ros-melodic-ros-control\
+                 ros-melodic-moveit ros-melodic-ros-controllers\
+                 ros-melodic-apriltag
+                 
 ```
 
 </details>
@@ -85,12 +89,12 @@ sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core \
 
 **ACTION**
 Launch the robot in gazebo. 
-
+  
 <details><summary>Click for Hint</summary>
   
 <p>
   
-We are afther a UR5 (Universal robot) robotic arm. All you need is in the `Worshop` directory 
+We are afther a UR5 (Universal robot) robotic arm. All you need is in the `Workshop` directory 
 
 </p> 
 
@@ -105,7 +109,7 @@ The arm, gripper and camera should stand up straight and be static.
 
 ### Controllers
 
-Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a robotic arm with an end-effector? Make sure the controllers have loaded appropriatly. 
+Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a robotic arm with an end-effector? Make sure the controllers have loaded appropriately. 
 
 **ACTION**
 Check which controllers are loaded.
@@ -237,7 +241,7 @@ workshop_ws
 <details><summary>Click to cheat</summary>
 
 ```
-roslaunch husky_abb_moveit_config moveit_planning_execution_gazebo.launch                                                    
+ roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch                                                    
 ```
 
 </details>
@@ -267,10 +271,10 @@ Have a look at the terminal where you've launched moveit from. You should see an
 **ACTION**
 Install moveit-setup-assistant
 
-Utimatly, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
+Ultimately, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
 
 **ACTION**
-Launch the moveit-setup assistant and load the brocken moveit configuration file.
+Launch the moveit-setup assistant and load the broken moveit configuration file.
 
 <details><summary>Click for Hint</summary>
   
@@ -299,7 +303,7 @@ Two other important tabs in the setup assistant are *Planning Groups* and *End E
 **ACTION**
 Inspect how the arm group is formed in the setup assistant.
 
-The *End Effectors* tab is where we difine the end-effector of our robot. It won't be used this time.
+The *End Effectors* tab is where we define the end-effector of our robot. It won't be used this time.
 
 If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
@@ -309,13 +313,6 @@ You can now go to the bottom most tab *Configuration Files*. This is where we ge
 
 **ACTION**
 Select `config/ur5.srdf` and click Generate Package.
-
-
-Add the following lines in the new `config/ur5.srdf`
-
-`   <disable_collisions link1="simple_gripper_base"link2="wrist_3_link" reason="Adjacent" />`
-    
-`<disable_collisions link1="simple_gripper_base" link2="ee_link" reason="Adjacent" />`
 
 You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch`.
 
@@ -481,7 +478,7 @@ Some line only need to be commented out
 
 **Note: We are tricking gazebo to attach the object to the gripper**
 
-**Note: The gripper model is very sensitiv and might break down if it hit the environment. In this case, restart the simulation**
+**Note: The gripper model is very sensitive and might break down if it hit the environment. In this case, restart the simulation**
 
 ## Strech Goals 
 
