@@ -1,15 +1,8 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
-#include <std_msgs/Bool.h>
-#include <std_srvs/SetBool.h>
 #include "ros/ros.h"
 #include <geometry_msgs/Pose.h>
-#include <geometry_msgs/Twist.h>
 #include <tf/transform_broadcaster.h>
-#include <signal.h>
-#include <trajectory_msgs/JointTrajectory.h>
-#include <trajectory_msgs/JointTrajectoryPoint.h>
-#include <gazebo_ros_link_attacher/Attach.h>
 using namespace tf;
 
 int main(int argc, char **argv)
