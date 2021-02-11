@@ -6,13 +6,6 @@
 #include <geometry_msgs/TransformStamped.h>
 
 
-/****************************
-
-Change the frame names
-and publish a geometry pose on the topic "/tag_pose"
-
-*****************************/
-
 
 
 int main(int argc, char **argv)
@@ -21,15 +14,15 @@ int main(int argc, char **argv)
 	geometry_msgs::Pose msg;
 	geometry_msgs::TransformStamped tf_msg;
     ros::NodeHandle node;
-
+	ros::Publisher pub = node.advertise<geometry_msgs::Pose>("tag_pose", 1000);
     tf::TransformListener listener;
     tf::StampedTransform transform;
     while (ros::ok())
     {
         try
         {
-            listener.waitForTransform("/frame_name1", "/frame_name2", ros::Time(0), ros::Duration(9.0));
-            listener.lookupTransform("/frame_name1", "/frame_name2", ros::Time(0), transform);
+            listener.waitForTransform("/world", "/tag_0", ros::Time(0), ros::Duration(9.0));
+            listener.lookupTransform("/world", "/tag_0", ros::Time(0), transform);
         }
         catch (tf::TransformException &ex)
         {
@@ -48,6 +41,7 @@ int main(int argc, char **argv)
         msg.orientation.z=tf_msg.transform.rotation.z;
         msg.orientation.w=tf_msg.transform.rotation.w;
         
+		pub.publish(msg);
         ros::spinOnce();
     }
     return 0;
