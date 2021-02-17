@@ -12,6 +12,9 @@
 #include <gazebo_ros_link_attacher/Attach.h>
 // start of the GraspTag class//
 
+
+// Look for the following commented lines in the code to guide you on where to add your own code
+
 /*************ADD SOME CODE HERE (START)**********
 |
 |
@@ -21,7 +24,6 @@
 |
 ************ADD SOME CODE HERE (END)**************/
 
-// The above shows you where code should be added
 
 // Look for spelling mistake and commented lines
 
@@ -233,7 +235,9 @@ int main(int argc, char **argv)
 	{
 		grasObj.DontExecuteGrasp();
 
+		ROS_WARN("waiting for tag positions");
 		ros::topic::waitForMessage<geometry_msgs::Pose>("/tag_pose");
+		ROS_INFO("Received tag position");
 
 		grasObj.CloseGripper(0.0);
 

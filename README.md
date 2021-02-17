@@ -12,7 +12,7 @@ Whenever a robots physically interacts with its surrounding and modifies its env
 
 **What are the challenges of robotic manipulation?**
 + *Path Planning:* Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120), [UR5](https://www.scottautomation.com/products/ur5-universal-robot/)). An arm often has between 5 and 7 Dof. Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
-+ *Grasping:* Once the arm knows how to travel from one place to another, its time to actually grasping something. Grasping in a vast and vibrant research topic mostly because how challenigng it can be for robots to find suitable grasp poses for everyday objects.
++ *Grasping:* Once the arm knows how to travel from one place to another, its time to actually grasp something. Grasping in a vast and vibrant research topic mostly because how challenigng it can be for robots to find suitable grasp poses for everyday objects.
 
 
 **What tools do we have to solve this problem?**
@@ -268,6 +268,10 @@ Have a look at the terminal where you've launched moveit from. You should see an
 
 ### Moveit setup assisstant
 
+**<span style="color:red">Known Issue</span>**
+
+There seem to be a bug in `moveit_setup_assistant` latest release which causes to crash when loading a config for editing. Try the next few steps and if it crashes, skip to <s>moveit_setup_assistant</s> .
+
 **ACTION**
 Install moveit-setup-assistant
 
@@ -275,6 +279,7 @@ Ultimately, the setup assistant will help us create a package containing all the
 
 **ACTION**
 Launch the moveit-setup assistant and load the broken moveit configuration file.
+
 
 <details><summary>Click for Hint</summary>
   
@@ -312,7 +317,33 @@ You can now go to the bottom most tab *Configuration Files*. This is where we ge
 ![moveit_set_assistant2.png](./resources/images/moveit_setup_assistant2.png)
 
 **ACTION**
+
 Select `config/ur5.srdf` and click Generate Package.
+
+
+
+## <s>moveit_setup_assistant</s>
+
+If the `moveit_setup_assistant` crashes, you can still modify the relevant files manually to generate to enable the collision matrix. Look for a semantic robot description file.
+
+<details><summary>Click for Hint</summary>
+  
+<p>
+semantic robot description file or `srdf`, are located within the moveit_config file. 
+
+</p> 
+
+<details><summary>Click to cheat!</summary>
+  
+`roscd ur5_moveit_config/config/`
+
+uncomment the disabled collisions.
+
+</details>
+
+</details>
+<br>
+
 
 You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch`.
 
@@ -399,6 +430,8 @@ Don't worry about the orientation.
 
 The transform should be from the `planning frame` to the tag frame . You can find out the planning frame when running `moveit_expl`
 
+`rqt_tf_tree` adn `tf_monitor` might be useful
+
 </p> 
 
 </details>
@@ -424,9 +457,8 @@ To have everything up at running you need to have launched the following:
 
 ```
 roslaunch ur_gazebo ur5_joint_limited.launch
-roslaunch husky_abb_moveit_config  
 roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch 
-rroslaunch apriltags_gazebo apriltag_spawn.launch 
+roslaunch apriltags_gazebo apriltag_spawn.launch 
 roslaunch apriltags_gazebo continuous_detection.launch  
 rosrun manipulation transform_tag_location 
 ```
@@ -440,13 +472,13 @@ rosrun manipulation transform_tag_location
 
 Now run `object_grasp_server`. You should see the arm move to a home position. In the terminal, you should see `"tag detected"` if all the required nodes are running. 
 
-As it name indicate, `object_grasp_server` is a serval waiting for a request. Find out what the name of the service is.
+As it name indicate, `object_grasp_server` is a server waiting for a request. Find out what the name of the service is.
 
 <details><summary>Hint</summary>
   
 <p>
 
-Use `rosnode info`
+Use `rosnode info` or `rosservice list`
 
 </p> 
 
