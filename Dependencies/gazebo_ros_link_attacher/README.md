@@ -2,16 +2,18 @@ Attach two Gazebo models with a virtual joint in a generalized grasp hack
 
 # Build
 
+Only run the commands below if you want to build the gazebo_ros_link_attacher package in a seperate workspace.
+
+
 ````
 mkdir -p gazebo_link_attacher_ws/src
 cd gazebo_link_attacher_ws/src
 catkin_init_workspace
 git clone https://github.com/pal-robotics/gazebo_ros_link_attacher.git
 cd ..
-catkin_make
+catkin build
 source devel/setup.bash
 ````
-
 
 # Launch
 
