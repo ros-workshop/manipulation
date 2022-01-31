@@ -22,7 +22,7 @@ Whenever a robots physically interacts with its surrounding and modifies its env
 
 **What else do we need to know?**
 + Manipulation works only if the robot knows what it looks like so we will be using URDFs
-+ The [MoveGroup](http://docs.ros.org/jade/api/moveit_ros_planning_interface/html/classmoveit_1_1planning__interface_1_1MoveGroup.html) class will be useful.
++ The [MoveGroupInterface](http://docs.ros.org/en/noetic/api/moveit_ros_planning_interface/html/classmoveit_1_1planning__interface_1_1MoveGroupInterface.html) class will be useful.
 
 ## Let's begin
 
@@ -527,7 +527,7 @@ Moveit will do the obstacle avoidance for you provided an OctoMap
 
 An OctoMap can be created using a depth camera
 
-Consult the [moveit tutorial](http://docs.ros.org/melodic/api/moveit_tutorials/html/doc/perception_pipeline/perception_pipeline_tutorial.html) 
+Consult the [moveit tutorial](https://ros-planning.github.io/moveit_tutorials/doc/perception_pipeline/perception_pipeline_tutorial.html) 
 
 </p> 
 
