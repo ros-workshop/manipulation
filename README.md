@@ -1,102 +1,50 @@
 # Manipulation
 
+Through this session, we will be familiarising ourselves with one of the major facets of robotics, *manipulation*.
+We will be controlling a Gazebo simulation of a robotic arm, called a Manipulator, using a variety of tools and methods to perform simple tasks in this workshop.
+
 ![Alt Text](./resources/images/manipulation.gif)
 
-**Goal:**
 
-The session aims to familiaries you with one of the most crucial aspects of modern robotics, *manipulation*.
+## Background 
 
-**What do we mean by manipulation?**
+We refer to manipulation when we are talking about a robot physically interacting with its surroundings and modifying its environement.
+We will be looking at two of the main areas under the manipulation umbrella during this workshop; Path Planning and Grasping.
 
-Whenever a robots physically interacts with its surrounding and modifies its environement, we talk about manipulation.
-
-**What are the challenges of robotic manipulation?**
-+ *Path Planning:* Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120), [UR5](https://www.universal-robots.com/products/ur5-robot/)). An arm often has between 5 and 7 Dof. Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
-+ *Grasping:* Once the arm knows how to travel from one place to another, its time to actually grasp something. Grasping in a vast and vibrant research topic mostly because how challenigng it can be for robots to find suitable grasp poses for everyday objects.
-
-
-**What tools do we have to solve this problem?**
-
-+ *ROS:* ROS allows us to integrate all aspects needed for manipulation.
-+ *[Moveit](https://moveit.ros.org/):* Moveit is a ROS package for motion planning build on top of libraries such as [OMPL](http://ompl.kavrakilab.org/).
-
-**What else do we need to know?**
-+ Manipulation works only if the robot knows what it looks like so we will be using URDFs
-+ The [MoveGroupInterface](http://docs.ros.org/en/noetic/api/moveit_ros_planning_interface/html/classmoveit_1_1planning__interface_1_1MoveGroupInterface.html) class will be useful.
-
-## Let's begin
-
-### Workspace
-By now you should have already set up a catkin workspace. Clone this repo in `workshop_ws/src`.
-
-<details><summary>Click for Hint</summary>
-  
-<p>
-
-```python
-cd ~/workshop_ws/src
-git clone https://github.com/ros-workshop/manipulation.git
-```
-</p>
-
-</details>
-
-### Dependencies
-
-First install [catkin tools](https://robotics.stackexchange.com/questions/16604/ros-catkin-make-vs-catkin-build) `sudo apt-get install python-catkin-tools` which allows to build the workspace in a more modular fashion.
-
-Second, installed the depenencies stipulated by the `package.xml`
-`rosdep install --from-paths src --ignore-src -r -y`
-
-if you do not have `rosdep`, install it. 
++ **Path Planning:**
+Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120), [UR5](https://www.universal-robots.com/products/ur5-robot/)).
+An arm often has between 5 and 7 Dof.
+Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
++ **Grasping:**
+Once the arm knows how to travel from one place to another, its time to actually grasp something.
+Grasping in a vast and vibrant research topic mostly because how challenigng it can be for robots to find suitable grasp poses for everyday objects.
 
 
-There are quite a few packages that need to be installed for the session:
+## Preperation
 
-+ moveit_ros
-+ moveit_core
-+ apriltag_ros
-+ image_geometry
-+ husky_description
-+ controller_manager
-+ gazebo_ros_control
-+ abb_resources # for next session
-+ ros_control
+There are a number of old ROS packages included in this repo by source.
+These packages have been copied in and adapted as they do not exist for noetic, and the dependancies they would originally specify are not all available too.
 
-<details><summary>Click for Hint</summary>
-  
-You can `sudo apt install` almost all of these packages.
-
-<br/>
-
-<details><summary>Click to cheat!</summary>
-  
-```
-sudo apt install ros-melodic-moveit-ros ros-melodic-moveit-core\
-                 ros-melodic-image-geometry ros-melodic-husky-description\
-                 ros-melodic-controller-manager ros-melodic-gazebo-ros-control\
-                 ros-melodic-abb-resources ros-melodic-apriltag-ros \
-                 ros-melodic-gazebo-plugins ros-melodic-ros-control\
-                 ros-melodic-moveit ros-melodic-ros-controllers\
-                 ros-melodic-apriltag
-                 
+```sh
+cd <workspace root>
+rosdep install --from-paths src --ignore-src -r -y
 ```
 
-</details>
-</details>
 
-## Everything a Robot needs
+## Our Simulated Manipulator
 
-**ACTION**
-Launch the robot in gazebo. 
-  
-<details><summary>Click for Hint</summary>
-  
-<p>
-  
-We are afther a UR5 (Universal robot) robotic arm. All you need is in the `Workshop` directory 
+We will be using a simulation of a UR5 by Universal Robots for this workshop session.
+The arm will have a Robotiq 2F85 (Which stands for 2 Finger 85mm Span) gripper, or an End Effector [EEF], and a Microsoft Kinect V2 RGBD camera attached.
+Similar to the previous sessions, we will simulate our robot using Gazebo.
 
-</p> 
+The package `ur_gazebo` in the `universal_robots` directory contains a simulation launch file for us already.
+Explore the package, and any others you want to see before we dive in, and find a launch file which you believe is the correct entry point/top level launch file.
+
+<details><summary>Click for a hint</summary>
+
+```
+roslaunch ur_gazebo ur5_launch
+```
 
 </details>
 <br>
@@ -105,73 +53,89 @@ You should see something like this:
 
 ![robot_gazebo](./resources/images/ur5_gazebo.png)
 
-The arm, gripper and camera should stand up straight and be static.
 
-### Controllers
+## Controllers
 
-Each joint or motor in the arm and hand needs a controller for actuation. Ask yourself this: What controllers do I expect for a robotic arm with an end-effector? Make sure the controllers have loaded appropriately. 
+Every motor for every joint on the robots we control needs a driver to translate our ROS commands into commands specific to the robot we are dealing with.
+Above this, ROS control offers "controllers" which oversee a commanded trajectory and supply the drivers with low level, high frequency commands to ensure that the path taken is correct.
 
-**ACTION**
-Check which controllers are loaded.
+![ros_control_diagram](./resources/images/ros_control_diagram.png)
 
-<details><summary>Click for Hint</summary>
-  
-<p>
-There should be a least 3 controllers.
-  
-+ Arm Controller
-+ Gripper Controller
-+ Joint State Controller
+This is not the only way to control robot.
+There are many ways in which the driver for the robotic manipulator may be interfaced with, all depending on the design of the driver.
+The simulation we are running has the controllers loaded and operated by Gazebo itself, using the `gazebo_ros_control` package which is downloaded with the full desktop version of ROS.
+The joint trajectories are published to Gazebo which emulates the effect of the controller.
 
-There is a useful rqt plugin to check your controllers 
+Regardless, lets go explore what controllers are running in our simulation, and where they are defined/configured.
+
+
+### Defining the Controllers
+
+I recommend to install an rqt widget called `rqt_controller_manager`.
+Run this and lets see what got loaded when we launched our simulation.
+You should see something like this when you select the controller namespace in the drop down box at the top.
 
 ![controller_manager](./resources/images/controller_list.png)
 
-</p> 
+Double click on these individual entries and observe the joints that they have claimed, and what type of controller it is.
 
-<details><summary>Click to cheat!</summary>
+You can alternatively call a particular rosservice call to the controller manager.
+The controller manager is the node which coordinates controllers and makes sure they do not clash during run time.
+Are you able to find the service to call and obtain the list without guidance?
 
-Install and run [rqt_controller_manager](http://wiki.ros.org/rqt_controller_manager)
+<details><summary>Click for a walkthrough</summary>
 
 ```
-sudo apt install ros-melodic-rqt-controller-manager  
-source /opt/ros/melodic/setup.bash 
-rosrun rqt_controller_manager rqt_controller_manager 
-```
-if you get an exception when running it, try to fix it with a `try/except` combination in the original rqt package.
+# List the services available
+rosservice list
 
-</details>
+# List the controllers
+rosservice call /controller_manager/list_controllers
+```
+
 </details>
 <br>
 
-----------------------------------------------------------
+So, where does these come from?
+Spend some time now searching through the `universal_robot` directory under `Workshop`.
+Can you find the config file where the controllers are defined, and when the are loaded?
 
-Now to see the controllers in action, jog the arm and fingers manually.
+<details><summary>Click to see the files</summary>
 
-**ACTION**
-Move the arm and fingers.
+The configuration for the arm and gripper controllers are loaded in the very launch file we started the simulation off with.
+Lines 25 and 26 are below.
 
-<details><summary>Click for Hint</summary>
-  
-<p>
+```xml
+<rosparam file="$(find ur_gazebo)/controller/arm_controller_ur5.yaml" command="load"/>
+<node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller gripper_controller" respawn="false" output="screen"/>
+```
 
-There is an rqt plugin for that!
+Line 25 shows you where you can find the controller config file.
+Line 26 shows us how this configuration file is used to load the controllers we want, and have them take control of the joints we want them to.
+But, what about the `joint_state_controller`?
+This is contained in another launch file, referenced on line 22 of the `ur_gazebo ur5.launch` file we have been looking at.
+
+```xml
+<include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+```
+
+</details>
+<br>
+
+
+### Putting the controllers to use
+
+I recommend installing a simple rqt widget called `rqt_joint_trajectory_controller`.
 
 ![traj_controller](./resources/images/traj_controller.png)
 
-<details><summary>Click to cheat!</summary>
+This widget allows one to set individual joint values on the fly, and the commands are all turned into joint trajectories and sent to the controllers.
+Run `rqt_graph` after hitting the red power button (it will turn green if successful) to see how this widget operates in the ROS stack.
+Also, echo the commands Gazebo is recieving from this widget.
 
-Install and run [rqt_joint_trajectory_controller](http://wiki.ros.org/rqt_joint_trajectory_controller)
 
-```
-sudo apt install ros-melodic-rqt-joint-trajectory*
-source /opt/ros/melodic/setup.bash 
-rosrun rqt_joint_trajectory_controller rqt_joint_trajectory_controller
-```
+## Rviz
 
-</details>
-
-</details>
 
 ### Joint States
 
