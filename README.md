@@ -136,14 +136,17 @@ Also, echo the commands Gazebo is recieving from this widget.
 
 ## Rviz
 
+You should have been seeing the simulated robot move in Gazebo up until now.
+Let's have a look at it in Rviz, as if we were visualizing our real robot.
+We will see how to control the robot with Rviz, like you have done in your previous session, later in this workshop.
 
-### Joint States
+Open up a fresh Rviz window and we will incrementally add to it as we go.
 
-**ACTION** Check that you are getting feedback from your robots `joint_states`.
+### Robot Model
 
-<details><summary>Click for Hint</summary>
+Let's check that we are recieving feedback from the robot through the `/joint_states` topic before we get to the Rviz window.
 
-Use `rostopic echo /joint_states` and you should see something like:
+You should see something like:
 
 ```
 header: 
@@ -161,76 +164,80 @@ velocity: [0.0031072944551323338, -0.00024589280552260895, -0.000350234510815029
 effort: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 ```
 
+You should have some experience with the Rviz window from the previous sessions in this workshop.
+Add a new display with the "add" button, and search for `RobotModel`.
+Make sure the global options for the fixed frame is set to something that exists, such as `base_link`, and you should see something like below.
+
+![robot_model](./resources/images/robot_model_rviz.png)
+
+If it wasn't made clear in the previous workshop lessons, Rviz shows the robot model here using the Transform Tree [tf tree].
+We launched a node called the `robot_state_publisher` which converts the joint states we echoed above into transformations, depicting where the robot limbs are relative to eachother.
+Go ahead and launch the ros graph rqt widget and see what I mean!
+
+<details><summary>See what I mean!</summary>
+
+![rosgraph](./resources/images/rosgraph.png)
+
 </details>
-
-### Kinect
-
-**ACTION** Check that you are getting images and point clouds from the simulated Kinect sensor
-
-<details><summary>Click for Hint</summary>
-
-View this image topic: `/kinect2/rgb/image_raw`
-
-View this Pointcloud topic: `/kinect2/depth_registered/points` (e.g. using `rviz`)
-
-</details>
+<br>
 
 ## MoveIt
 
-Bringing up the robot in gazebo and start moveit.
+[Moveit](https://moveit.ros.org/) is a very powerful tool within the ROS ecosystem for planning manipulation motions.
+We will be lightly touching on how to use MoveIt, but there is a plethora of configuration options you will learn about in due time.
 
-**ACTION**
-Launch the robot in gazebo and launch the `moveit-planning-execution-gazebo` pkg.
+There is a package in the `universal_robot` directory which has "moveit" in its name.
+Search through it and see if any lauch stands out to you.
 
-<details><summary>Click for Hint</summary>
-  
-<p>
-  
-```
-workshop_ws
-│   devel
-│   build   
-└───src
-│   │   pkg1
-│   │   pkg2
-│   └───robot_pkg
-│       │   robot_description
-|       └───robot_moveit_config
-|           |   moveit_planning_execution_gazebo.launch
-|           |   demo.launch
-```
-
-</p> 
-
-<details><summary>Click to cheat</summary>
-
+<details><summary>Click for the answer</summary>
+ 
 ```
  roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch                                                    
 ```
 
 </details>
-</details>
 <br>
 
-Then launch Rviz and load the `MotionPlanning` pluggin.
+MoveIt comes with an Rviz plugin for planning and executing motions.
+This is all included in the full desktop version of ROS, so you don't need to worry about installing anything new right now.
+In Rviz, load the `MotionPlanning` plugin.
 
-![rviz1](./resources/images/rviz.png)
+![rviz1](./resources/images/MotionPlanning_plugin.png)
 
-In the *planning* tab of the motion planning pluggin, you can click *update* to give the arm a random valid goal and click *plan and execute*. You should see the robot planning the path and move.... 
+In the *planning* tab of the motion planning pluggin, you will need to set the `Planning Group`, the `Start State`, and the `Goal State`.
+* The `Planning Group` is a predefined list of actuated joints in a configuration file which we will view later.
+  * This list of joints can stretch over multiple controllers and `Planning Groups`, but it becomes difficult to ensure that all joints are currently handled by controllers.
+* The `Start State` is typically only important when using MoveIt programmatically, since you can create plans in advance if you know within a tolerance where the arm will be when you go to execute the plan.
+  * It is usually best to leave it in `<current>` else you will start recieving errors when you try to move the arm from a position that is not the start state defined in the trajectory created.
+* You will see in the drop down for the `Start State` and the `Goal State` that there are named position options.
+  * These are defined in a configuration file in which you can give specific joint configurations names for repeated execution.
 
-<details><summary>Click for  Important Hint</summary>
-  
-<p>
-  
+When you are ready and have given the goal a state other than `<current>`, hit `Plan & Execute` and lets see what happens.
+
+<details><summary>Click for a Spoiler</summary>
+
 IT'S NOT GOING TO MOVE
   
-Have a look at the terminal where you've launched moveit from. You should see an error.... that's right, two links are in collision, in fact, all links are in collision! Something is wrong in our moveit configuration  
-
-</p> 
+Have a look at the terminal where you've launched moveit from.
+You should see an error.... that's right, two links are in collision, in fact, all links are in collision!
+Something is wrong in our moveit configuration  
 
 </details>
 
 ### Moveit setup assisstant
+
+MoveIt has a very large number of configuration files and factors to consider.
+Luckily, MoveIt has a setup assistant which gives us a GUI to create and edit these moveit configuration packages.
+The launch file we used before came from a package made with the setup assisstant.
+
+We will use this tool to fix our borked package.
+
+<details><summary>Install in the usual fashion</summary>
+
+```sudo apt install ros-noetic-moveit-setup-assistant``` 
+
+</details>
+<br>
 
 **<span style="color:red">Known Issue</span>**
 
@@ -308,6 +315,17 @@ uncomment the disabled collisions.
 </details>
 <br>
 
+### Kinect
+
+**ACTION** Check that you are getting images and point clouds from the simulated Kinect sensor
+
+<details><summary>Click for Hint</summary>
+
+View this image topic: `/kinect2/rgb/image_raw`
+
+View this Pointcloud topic: `/kinect2/depth_registered/points` (e.g. using `rviz`)
+
+</details>
 
 You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch`.
 
