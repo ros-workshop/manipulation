@@ -2,11 +2,9 @@
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <std_msgs/Bool.h>
 #include <std_srvs/SetBool.h>
-#include "ros/ros.h"
+#include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Twist.h>
-#include <tf/transform_broadcaster.h>
-#include <signal.h>
 #include <trajectory_msgs/JointTrajectory.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <gazebo_ros_link_attacher/Attach.h>
@@ -29,14 +27,6 @@
 
 // Only read from line 178
 
-using namespace tf;
-
-void SigintHandler(int sig)
-{
-
-	ROS_INFO("SHUTING DOWN()");
-	ros::shutdown();
-}
 
 class GraspTag
 {
@@ -73,7 +63,6 @@ private:
 GraspTag::GraspTag()
 {
 
-	signal(SIGINT, SigintHandler);
 	pose_sub = n.subscribe("/tag_pose", 1000, &GraspTag::setPoseCallback, this);
 	gripper_grasp_pub = n.advertise<trajectory_msgs::JointTrajectory>("/gripper_controller/command", 1000);
 	attach_tag_client = n.serviceClient<gazebo_ros_link_attacher::Attach>("/link_attacher_node/attach");
@@ -113,7 +102,8 @@ bool GraspTag::serviceCallback(std_srvs::SetBool::Request &req, std_srvs::SetBoo
 void GraspTag::setPoseCallback(const geometry_msgs::Pose::ConstPtr &pose)
 {
 	target_pose.position = pose->position;
-	target_pose.orientation = createQuaternionMsgFromRollPitchYaw(1.57, 0, 0);
+	target_pose.orientation.x = 0.7071;
+	target_pose.orientation.w = 0.7071;
 }
 
 geometry_msgs::Pose GraspTag::getTarget()
@@ -179,7 +169,6 @@ int main(int argc, char **argv)
 {
 	//delcarations
 
-	signal(SIGINT, SigintHandler);
 
 	ros::init(argc, argv, "object_grasp_server");
 
