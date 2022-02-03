@@ -8,7 +8,7 @@ We will be controlling a Gazebo simulation of a robotic arm, called a Manipulato
 
 ## Background 
 
-We refer to manipulation when we are talking about a robot physically interacting with its surroundings and modifying its environement.
+We refer to manipulation when we are talking about a robot physically interacting with its surroundings and modifying its environment.
 We will be looking at two of the main areas under the manipulation umbrella during this workshop; Path Planning and Grasping.
 
 + **Path Planning:**
@@ -16,16 +16,16 @@ Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb
 An arm often has between 5 and 7 Dof.
 Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
 + **Grasping:**
-Once the arm knows how to travel from one place to another, its time to actually grasp something.
-Grasping in a vast and vibrant research topic mostly because how challenigng it can be for robots to find suitable grasp poses for everyday objects.
+Once the arm knows how to travel from one place to another, It's time to actually grasp something.
+Grasping in a vast and vibrant research topic mostly because how challenging it can be for robots to find suitable grasp poses for everyday objects.
 
 
-## Preperation
+## Preparation
 
 There are a number of old ROS packages included in this repo by source.
-These packages have been copied in and adapted as they do not exist for noetic, and the dependancies they would originally specify are not all available too.
+These packages have been copied in and adapted as they do not exist for noetic, and the dependencies they would originally specify are not all available too.
 
-```
+```bash
 cd <workspace root>
 rosdep install --from-paths src --ignore-src -r -y
 ```
@@ -49,7 +49,7 @@ Explore the package, and any others you want to see before we dive in, and find 
 
 ---
 
-```
+```bash
 roslaunch ur_gazebo ur5.launch
 ```
 
@@ -82,23 +82,23 @@ Regardless, lets go explore what controllers are running in our simulation, and 
 ### Defining the Controllers
 
 I recommend to install an rqt widget called `rqt_controller_manager`.
-Run this and lets see what got loaded when we launched our simulation.
+Run this and let's see what got loaded when we launched our simulation.
 You should see something like this when you select the controller namespace in the drop down box at the top.
 
 ![controller_manager](./resources/images/controller_list.png)
 
 Double click on these individual entries and observe the joints that they have claimed, and what type of controller it is.
 
-You can alternatively call a particular rosservice call to the controller manager.
+You can alternatively call a particular `rosservice` call to the controller manager.
 The controller manager is the node which coordinates controllers and makes sure they do not clash during run time.
 Are you able to find the service to call and obtain the list without guidance?
 
-<details><summary>Click for a walkthrough</summary>
+<details><summary>Click for a walk through</summary>
 <p>
 
 ---
 
-```
+```bash
 # List the services available
 rosservice list
 
@@ -114,7 +114,7 @@ rosservice call /controller_manager/list_controllers
 
 So, where does these come from?
 Spend some time now searching through the `universal_robot` directory under `Workshop`.
-Can you find the config file where the controllers are defined, and when the are loaded?
+Can you find the config file where the controllers are defined, and when they are loaded?
 
 <details><summary>Click to see the files</summary>
 <p>
@@ -153,7 +153,7 @@ I recommend installing a simple rqt widget called `rqt_joint_trajectory_controll
 
 This widget allows one to set individual joint values on the fly, and the commands are all turned into joint trajectories and sent to the controllers.
 Run `rqt_graph` after hitting the red power button (it will turn green if successful) to see how this widget operates in the ROS stack.
-Also, echo the commands Gazebo is recieving from this widget.
+Also, echo the commands Gazebo is receiving from this widget.
 
 
 ## Rviz
@@ -162,15 +162,15 @@ You should have been seeing the simulated robot move in Gazebo up until now.
 Let's have a look at it in Rviz, as if we were visualizing our real robot.
 We will see how to control the robot with Rviz, like you have done in your previous session, later in this workshop.
 
-Open up a fresh Rviz window and we will incrementally add to it as we go.
+Open up a fresh Rviz window, and we will incrementally add to it as we go.
 
 ### Robot Model
 
-Let's check that we are recieving feedback from the robot through the `/joint_states` topic before we get to the Rviz window.
+Let's check that we are receiving feedback from the robot through the `/joint_states` topic before we get to the Rviz window.
 
 You should see something like:
 
-```
+```yaml
 header: 
   seq: 206558
   stamp: 
@@ -193,7 +193,7 @@ Make sure the global options for the fixed frame is set to something that exists
 ![robot_model](./resources/images/robot_model_rviz.png)
 
 If it wasn't made clear in the previous workshop lessons, Rviz shows the robot model here using the Transform Tree [tf tree].
-We launched a node called the `robot_state_publisher` which converts the joint states we echoed above into transformations, depicting where the robot limbs are relative to eachother.
+We launched a node called the `robot_state_publisher` which converts the joint states we echoed above into transformations, depicting where the robot limbs are relative to each other.
 Go ahead and launch the ros graph rqt widget and see what I mean!
 
 <details><summary>See what I mean!</summary>
@@ -215,14 +215,14 @@ Go ahead and launch the ros graph rqt widget and see what I mean!
 We will be lightly touching on how to use MoveIt, but there is a plethora of configuration options you will learn about in due time.
 
 There is a package in the `universal_robot` directory which has "moveit" in its name.
-Search through it and see if any lauch stands out to you.
+Search through it and see if any launch stands out to you.
 
 <details><summary>Click for the answer</summary>
 <p>
 
 ---
 
-```
+```bash
  roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch                                                    
 ```
 
@@ -238,15 +238,15 @@ In Rviz, load the `MotionPlanning` plugin.
 
 ![rviz1](./resources/images/MotionPlanning_plugin.png)
 
-In the *planning* tab of the motion planning pluggin, you will need to set the `Planning Group`, the `Start State`, and the `Goal State`.
+In the *planning* tab of the motion planning plugin, you will need to set the `Planning Group`, the `Start State`, and the `Goal State`.
 * The `Planning Group` is a predefined list of actuated joints in a configuration file which we will view later.
   * This list of joints can stretch over multiple controllers and `Planning Groups`, but it becomes difficult to ensure that all joints are currently handled by controllers.
 * The `Start State` is typically only important when using MoveIt programmatically, since you can create plans in advance if you know within a tolerance where the arm will be when you go to execute the plan.
-  * It is usually best to leave it in `<current>` else you will start recieving errors when you try to move the arm from a position that is not the start state defined in the trajectory created.
+  * It is usually best to leave it in `<current>` else you will start receiving errors when you try to move the arm from a position that is not the start state defined in the trajectory created.
 * You will see in the drop down for the `Start State` and the `Goal State` that there are named position options.
   * These are defined in a configuration file in which you can give specific joint configurations names for repeated execution.
 
-When you are ready and have given the goal a state other than `<current>`, hit `Plan & Execute` and lets see what happens.
+When you are ready and have given the goal a state other than `<current>`, hit `Plan & Execute` and let's see what happens.
 
 <details><summary>Click for a Spoiler</summary>
 <p>
@@ -265,20 +265,20 @@ Something is wrong in our moveit configuration.
 </details>
 <br>
 
-### Moveit setup assisstant
+### Moveit setup assistant
 
 MoveIt has a very large number of configuration files and factors to consider.
 Luckily, MoveIt has a setup assistant which gives us a GUI to create and edit these moveit configuration packages.
-The launch file we used before came from a package made with the setup assisstant.
+The launch file we used before came from a package made with the setup assistant.
 
-We will use this tool to fix our borked package.
+We will use this tool to fix our forked package.
 
 <details><summary>Install and launch in the usual fashion</summary>
 <p>
 
 ---
 
-```
+```bash
 sudo apt install ros-noetic-moveit-setup-assistant
 roslaunch moveit_setup_assistant setup_assistant.launch
 ```
@@ -290,14 +290,14 @@ roslaunch moveit_setup_assistant setup_assistant.launch
 <br>
 
 The window that first loads will be pretty self-explanatory.
-Load in the moveit config we are using and lets get started on fixing this package.
+Load in the moveit config we are using and let's get started on fixing this package.
 Once loaded you should see a model of your robot appear on the right:
 
 ![setup_assistant](./resources/images/moveit_setup_assitant1.png)
 
 Now take a look at the `Self-Collision` tab since our issue had to do with link collisions.
 You will notice that there are no collisions defined.
-Go ahead a generate a collision matrix. 
+Go ahead and generate a collision matrix. 
 
 **NOTE: The gripper is not visible in the robot model**
 This will be important later.
@@ -346,17 +346,17 @@ You should now be able to plan a path and see the robot move in Gazebo.
 Spend some time to use the `Motion planning` rviz plugin.
 
 
-## Programatically Using Moveit for Manipulation tasks
+## Programmatically using Moveit for Manipulation tasks
 
 Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz.
-It is time to create a application for our arm.
+It is time to create an application for our arm.
 A common one is to grasp an object which position is determined using sensors.
 Here we will be using an image and apriltags.
 
 Before that, though, run the following node to see what it does.
 Then, inspect the source code to see how it does it.
 
-```
+```bash
 rosrun manipulation moveit_expl
 ```
 
@@ -370,7 +370,7 @@ You can do this by listing all topics available and inspecting the ones you beli
 
 ---
 
-The folling topics will be used in the nodes we will be launching shortly:
+The following topics will be used in the nodes we will be launching shortly:
 - View this image topic: `/kinect2/rgb/image_raw`
 - View this Pointcloud topic: `/kinect2/depth_registered/points`
 
@@ -382,7 +382,7 @@ The folling topics will be used in the nodes we will be launching shortly:
 
 Make sure to install `apriltag_ros` if you have not done so from the previous workshop session.
 
-Now let's spawn an apriltag in gazebo and start the detectection.
+Now let's spawn an apriltag in gazebo and start the detection.
 We have a package in this workshop material which will spawn the tag and start a tag detection for the exact tag we just spawned.
 Have a look around and see if you can find it, and the different launch files you need to run.
 
@@ -391,7 +391,7 @@ Have a look around and see if you can find it, and the different launch files yo
 
 ---
 
-```
+```bash
 roslaunch apriltags_gazebo apriltag_spawn.launch
 roslaunch apriltags_gazebo continuous_detection.launch
 ```
@@ -402,8 +402,8 @@ roslaunch apriltags_gazebo continuous_detection.launch
 </details>
 <br>
 
-If you can't see the apriltag cube in Gazebo, check the loaded models in the left hand pane and right click -> "Move To".
-It may be in a suprising place!
+If you can't see the apriltag cube in Gazebo, check the loaded models in the left-hand pane and right click -> "Move To".
+It may be in a surprising place!
 Move the tag to the right place manually.
 Alternatively, close everything down, make the changes to the model spawn launch as you see fit, and re-launch.
 
@@ -461,7 +461,7 @@ Make sure that you have module 1 and 2 running.
 
 To have everything up at running you need to have launched the following:
 
-```
+```bash
 roslaunch ur_gazebo ur5.launch
 roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch 
 roslaunch apriltags_gazebo apriltag_spawn.launch 
@@ -503,12 +503,12 @@ We are tricking gazebo to attach the object to the gripper.
 The gripper model is very sensitive and might break down if it hits the environment.
 Restart the simulation if it does.
 
-## Strech Goals 
+## Stretch Goals 
 
 **Goal:** make the arm grasp the object while avoiding the environment
 
 Restart the Gazebo simulation , move the arm to home position and launch `obsatcle_apriltag_spawn`.
-Grasp the object without hittting obstacles.
+Grasp the object without hitting obstacles.
 
 
 <details><summary>Click for a Hint</summary>
