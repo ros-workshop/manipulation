@@ -1,7 +1,7 @@
 # Manipulation
 
 Through this session, we will be familiarising ourselves with one of the major facets of robotics, *manipulation*.
-We will be controlling a Gazebo simulation of a robotic arm, called a Manipulator, using a variety of tools and methods to perform simple tasks in this workshop.
+We will be controlling a Gazebo simulation of a robotic arm, called a *"Manipulator"*, using a variety of tools and methods to perform simple tasks in this workshop.
 
 ![Alt Text](./resources/images/manipulation.gif)
 
@@ -9,7 +9,7 @@ We will be controlling a Gazebo simulation of a robotic arm, called a Manipulato
 ## Background 
 
 We refer to manipulation when we are talking about a robot physically interacting with its surroundings and modifying its environment.
-We will be looking at two of the main areas under the manipulation umbrella during this workshop; Path Planning and Grasping.
+We will be looking at two of the main areas under the manipulation umbrella during this workshop; **Path Planning** and **Grasping**.
 
 + **Path Planning:**
 Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120), [UR5](https://www.universal-robots.com/products/ur5-robot/)).
@@ -23,7 +23,7 @@ Grasping in a vast and vibrant research topic mostly because how challenging it 
 ## Preparation
 
 There are a number of old ROS packages included in this repo by source.
-These packages have been copied in and adapted as they do not exist for noetic, and the dependencies they would originally specify are not all available too.
+These packages have been copied in and adapted as they do not exist for `noetic`, and the dependencies they would originally specify are not all available too.
 
 ```bash
 cd <workspace root>
@@ -41,7 +41,7 @@ Similar to the previous sessions, we will simulate our robot using Gazebo.
 The simulation will sometimes glitch and send the robot into a folded configuration somewhere else in Gazebo.
 You will need to kill the ROS stack and start again if this is the case.
 
-The package `ur_gazebo` in the `universal_robots` directory contains a simulation launch file for us already.
+The package [`ur_gazebo`](./Workshop/universal_robot/ur_gazebo) in the `universal_robots` directory contains a simulation launch file for us already.
 Explore the package, and any others you want to see before we dive in, and find a launch file which you believe is the correct entry point/top level launch file.
 
 <details><summary>Click for a hint</summary>
@@ -81,9 +81,19 @@ Regardless, lets go explore what controllers are running in our simulation, and 
 
 ### Defining the Controllers
 
-I recommend to install an rqt widget called `rqt_controller_manager`.
-Run this and let's see what got loaded when we launched our simulation.
-You should see something like this when you select the controller namespace in the drop down box at the top.
+I recommend to install an rqt widget called [`rqt_controller_manager`][ros-rqt-controller-manager].
+
+```bash
+sudo apt install ros-noetic-rqt-controller-manager
+```
+
+Run this using the below command and let's see what got loaded when we launched our simulation.
+
+```bash
+rqt -s rqt_controller_manager
+```
+
+You should see something like this when you select the `/controller_manager` namespace in the drop down box at the top.
 
 ![controller_manager](./resources/images/controller_list.png)
 
@@ -113,7 +123,7 @@ rosservice call /controller_manager/list_controllers
 <br>
 
 So, where does these come from?
-Spend some time now searching through the `universal_robot` directory under `Workshop`.
+Spend some time now searching through the [`universal_robot`](./Workshop/universal_robot/universal_robot) directory under [`Workshop`](./Workshop).
 Can you find the config file where the controllers are defined, and when they are loaded?
 
 <details><summary>Click to see the files</summary>
@@ -527,3 +537,5 @@ Consult the [moveit tutorial](https://ros-planning.github.io/moveit_tutorials/do
 </p>
 </details>
 <br>
+
+[ros-rqt-controller-manager]: http://wiki.ros.org/rqt_controller_manager
