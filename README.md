@@ -25,7 +25,7 @@ Grasping in a vast and vibrant research topic mostly because how challenigng it 
 There are a number of old ROS packages included in this repo by source.
 These packages have been copied in and adapted as they do not exist for noetic, and the dependancies they would originally specify are not all available too.
 
-```sh
+```
 cd <workspace root>
 rosdep install --from-paths src --ignore-src -r -y
 ```
@@ -41,11 +41,17 @@ The package `ur_gazebo` in the `universal_robots` directory contains a simulatio
 Explore the package, and any others you want to see before we dive in, and find a launch file which you believe is the correct entry point/top level launch file.
 
 <details><summary>Click for a hint</summary>
+<p>
+
+---
 
 ```
-roslaunch ur_gazebo ur5_launch
+roslaunch ur_gazebo ur5.launch
 ```
 
+---
+
+</p>
 </details>
 <br>
 
@@ -84,6 +90,9 @@ The controller manager is the node which coordinates controllers and makes sure 
 Are you able to find the service to call and obtain the list without guidance?
 
 <details><summary>Click for a walkthrough</summary>
+<p>
+
+---
 
 ```
 # List the services available
@@ -93,6 +102,9 @@ rosservice list
 rosservice call /controller_manager/list_controllers
 ```
 
+---
+
+</p>
 </details>
 <br>
 
@@ -101,6 +113,9 @@ Spend some time now searching through the `universal_robot` directory under `Wor
 Can you find the config file where the controllers are defined, and when the are loaded?
 
 <details><summary>Click to see the files</summary>
+<p>
+
+---
 
 The configuration for the arm and gripper controllers are loaded in the very launch file we started the simulation off with.
 Lines 25 and 26 are below.
@@ -119,6 +134,9 @@ This is contained in another launch file, referenced on line 22 of the `ur_gazeb
 <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
 ```
 
+---
+
+</p>
 </details>
 <br>
 
@@ -175,9 +193,15 @@ We launched a node called the `robot_state_publisher` which converts the joint s
 Go ahead and launch the ros graph rqt widget and see what I mean!
 
 <details><summary>See what I mean!</summary>
+<p>
+
+---
 
 ![rosgraph](./resources/images/rosgraph.png)
 
+---
+
+</p>
 </details>
 <br>
 
@@ -190,11 +214,17 @@ There is a package in the `universal_robot` directory which has "moveit" in its 
 Search through it and see if any lauch stands out to you.
 
 <details><summary>Click for the answer</summary>
- 
+<p>
+
+---
+
 ```
  roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch                                                    
 ```
 
+---
+
+</p>
 </details>
 <br>
 
@@ -215,14 +245,21 @@ In the *planning* tab of the motion planning pluggin, you will need to set the `
 When you are ready and have given the goal a state other than `<current>`, hit `Plan & Execute` and lets see what happens.
 
 <details><summary>Click for a Spoiler</summary>
+<p>
+
+---
 
 IT'S NOT GOING TO MOVE
   
 Have a look at the terminal where you've launched moveit from.
 You should see an error.... that's right, two links are in collision, in fact, all links are in collision!
-Something is wrong in our moveit configuration  
+Something is wrong in our moveit configuration.
 
+---
+
+</p>
 </details>
+<br>
 
 ### Moveit setup assisstant
 
@@ -232,105 +269,79 @@ The launch file we used before came from a package made with the setup assisstan
 
 We will use this tool to fix our borked package.
 
-<details><summary>Install in the usual fashion</summary>
-
-```sudo apt install ros-noetic-moveit-setup-assistant``` 
-
-</details>
-<br>
-
-**<span style="color:red">Known Issue</span>**
-
-There seem to be a bug in `moveit_setup_assistant` latest release which causes to crash when loading a config for editing. Try the next few steps and if it crashes, skip to <s>moveit_setup_assistant</s> .
-
-**ACTION**
-Install moveit-setup-assistant
-
-Ultimately, the setup assistant will help us create a package containing all the moveit configuration files along with launch files to get the robot up and running. 
-
-**ACTION**
-Launch the moveit-setup assistant and load the broken moveit configuration file.
-
-
-<details><summary>Click for Hint</summary>
-  
+<details><summary>Install and launch in the usual fashion</summary>
 <p>
-  
-`roslaunch moveit_setup_assistant setup_assistant.launch`
 
-</p> 
+---
 
+```
+sudo apt install ros-noetic-moveit-setup-assistant
+roslaunch moveit_setup_assistant setup_assistant.launch
+```
+
+---
+
+</p>
 </details>
 <br>
 
+The window that first loads will be pretty self-explanatory.
+Load in the moveit config we are using and lets get started on fixing this package.
 Once loaded you should see a model of your robot appear on the right:
 
 ![setup_assistant](./resources/images/moveit_setup_assitant1.png)
 
-Now take a look at the *Self-Collision* tab (our issue had to do with link collisions). You will notice that there are no collisions defined. Go ahead a generate a collision matrix. 
+Now take a look at the `Self-Collision` tab since our issue had to do with link collisions.
+You will notice that there are no collisions defined.
+Go ahead a generate a collision matrix. 
 
 **NOTE: The gripper is not visible in the robot model**
+This will be important later.
 
-**ACTION**
-Generate a collision matrix.
-
-Two other important tabs in the setup assistant are *Planning Groups* and *End Effectors*. The first one is where we define the joints and links the hand and arm will use for planning. The name are the group are important to know. 
-
-**ACTION**
-Inspect how the arm group is formed in the setup assistant.
-
-The *End Effectors* tab is where we define the end-effector of our robot. It won't be used this time.
-
-If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
-
-You can now go to the bottom most tab *Configuration Files*. This is where we generate the moveit pkg and all relevant files. By generating the collision matrix, you would have modified the *.srdf*  file. Before generating the package make sure you select the *.srdf* so that it gets regenerated. All the other boxes can be left as they are.
-
-![moveit_set_assistant2.png](./resources/images/moveit_setup_assistant2.png)
-
-**ACTION**
-
-Select `config/ur5.srdf` and click Generate Package.
-
-
-
-## <s>moveit_setup_assistant</s>
-
-If the `moveit_setup_assistant` crashes, you can still modify the relevant files manually to generate to enable the collision matrix. Look for a semantic robot description file.
-
-<details><summary>Click for Hint</summary>
-  
+<details><summary>Comeback here if you are stuck debugging later</summary>
 <p>
-semantic robot description file or `srdf`, are located within the moveit_config file. 
 
-</p> 
+---
 
-<details><summary>Click to cheat!</summary>
-  
-`roscd ur5_moveit_config/config/`
+This indicates that we aren't getting all of the joints and links in our URDF.
+Whilst we don't always need every link and joint to be provided here, since moveit will only be used to plan for the manipulator and EEF, the gripper is very important in the self-collision matrix.
 
-uncomment the disabled collisions.
+Have a look at the `.setup_assistant` file in the `ur5_moveit_config` package, and pay close attention to which URDF was used in the making of this package.
+Then, have a look at what URDF will have been spawned by default when we launched Gazebo.
+Make the necessary change to the `.setup_assistant` file, and redo this process.
+You shouldn't have any issue now...
 
-</details>
+---
 
+</p>
 </details>
 <br>
 
-### Kinect
+Two other important tabs in the setup assistant are `Planning Groups` and `End Effectors`.
+The first one is where we define the joints and links the hand and arm will use for planning.
+Do you recall selecting the planning group in the Rviz motion planning window?
+The name of the groups are important to know. 
 
-**ACTION** Check that you are getting images and point clouds from the simulated Kinect sensor
+The `End Effectors` tab is where we define the end-effector of our robot.
+It won't be used this time.
 
-<details><summary>Click for Hint</summary>
+If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
-View this image topic: `/kinect2/rgb/image_raw`
+You can now go to the bottom most tab `Configuration Files`.
+This is where we generate the moveit pkg and all relevant files.
+By generating the collision matrix, you would have modified the `.srdf` file.
+Before generating the package make sure you select the `.srdf` so that it gets regenerated.
+All the other boxes can be left as they are.
 
-View this Pointcloud topic: `/kinect2/depth_registered/points` (e.g. using `rviz`)
+![moveit_set_assistant2.png](./resources/images/moveit_setup_assistant2.png)
 
-</details>
 
 You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch`.
 
 You should now be able to plan a path and see the robot move in Gazebo.
-Spend some time to use the `Motion planning` rviz pluggin
+Spend some time to use the `Motion planning` rviz plugin.
+
+
 ## Using Moveit
 
 **A quick example a giving a goal to Moveit in a .cpp file**
@@ -343,6 +354,17 @@ Inpect this file, see what it does and how. You will need this knowledge later.
 
 Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz. It is time to create a application for our arm. A common one is to grasp an object which position is determined using sensors. Here we will be using an image and apriltags.
 
+### Kinect
+
+**ACTION** Check that you are getting images and point clouds from the simulated Kinect sensor
+
+<details><summary>Click for Hint</summary>
+
+View this image topic: `/kinect2/rgb/image_raw`
+
+View this Pointcloud topic: `/kinect2/depth_registered/points` (e.g. using `rviz`)
+
+</details>
 
 **ACTION**
 Spawn an apriltag in gazebo and start the detectection.
