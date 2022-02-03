@@ -37,6 +37,10 @@ We will be using a simulation of a UR5 by Universal Robots for this workshop ses
 The arm will have a Robotiq 2F85 (Which stands for 2 Finger 85mm Span) gripper, or an End Effector [EEF], and a Microsoft Kinect V2 RGBD camera attached.
 Similar to the previous sessions, we will simulate our robot using Gazebo.
 
+**<span style="color:red">Known Issue</span>**
+The simulation will sometimes glitch and send the robot into a folded configuration somewhere else in Gazebo.
+You will need to kill the ROS stack and start again if this is the case.
+
 The package `ur_gazebo` in the `universal_robots` directory contains a simulation launch file for us already.
 Explore the package, and any others you want to see before we dive in, and find a launch file which you believe is the correct entry point/top level launch file.
 
@@ -342,190 +346,175 @@ You should now be able to plan a path and see the robot move in Gazebo.
 Spend some time to use the `Motion planning` rviz plugin.
 
 
-## Using Moveit
+## Programatically Using Moveit for Manipulation tasks
 
-**A quick example a giving a goal to Moveit in a .cpp file**
+Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz.
+It is time to create a application for our arm.
+A common one is to grasp an object which position is determined using sensors.
+Here we will be using an image and apriltags.
 
-```rosrun manipulation moveit_expl```
+Before that, though, run the following node to see what it does.
+Then, inspect the source code to see how it does it.
 
-**ACTION**
-Inpect this file, see what it does and how. You will need this knowledge later.
+```
+rosrun manipulation moveit_expl
+```
 
+### Apriltag Detection
 
-Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz. It is time to create a application for our arm. A common one is to grasp an object which position is determined using sensors. Here we will be using an image and apriltags.
-
-### Kinect
-
-**ACTION** Check that you are getting images and point clouds from the simulated Kinect sensor
-
-<details><summary>Click for Hint</summary>
-
-View this image topic: `/kinect2/rgb/image_raw`
-
-View this Pointcloud topic: `/kinect2/depth_registered/points` (e.g. using `rviz`)
-
-</details>
-
-**ACTION**
-Spawn an apriltag in gazebo and start the detectection.
+Check that you are getting images and point clouds from the simulated Kinect sensor.
+You can do this by listing all topics available and inspecting the ones you believe should be right, inspecting the Gazebo node and seeing which topics if publishes of the correct message type, or going through Rviz and selecting to display the topics of the correct message type.
 
 <details><summary>Click for Hint</summary>
-  
 <p>
-  
 
-`roslaunch apriltags_gazebo apriltag_spawn.launch`
-`roslaunch apriltags_gazebo continuous_detection.launch`
+---
 
-  
+The folling topics will be used in the nodes we will be launching shortly:
+- View this image topic: `/kinect2/rgb/image_raw`
+- View this Pointcloud topic: `/kinect2/depth_registered/points`
 
-</p> 
+---
 
+</p>
 </details>
 <br>
 
-Now view this detection image on the topic `/tag_detections_image/compressed`
+Make sure to install `apriltag_ros` if you have not done so from the previous workshop session.
 
+Now let's spawn an apriltag in gazebo and start the detectection.
+We have a package in this workshop material which will spawn the tag and start a tag detection for the exact tag we just spawned.
+Have a look around and see if you can find it, and the different launch files you need to run.
 
 <details><summary>Click for Hint</summary>
-  
 <p>
-  
 
-`rosrun rqt_image_view rqt_image_view "/tag_detections_image/compressed"`
+---
 
-  
+```
+roslaunch apriltags_gazebo apriltag_spawn.launch
+roslaunch apriltags_gazebo continuous_detection.launch
+```
+
+---
 
 </p> 
-
 </details>
 <br>
 
+If you can't see the apriltag cube in Gazebo, check the loaded models in the left hand pane and right click -> "Move To".
+It may be in a suprising place!
+Move the tag to the right place manually.
+Alternatively, close everything down, make the changes to the model spawn launch as you see fit, and re-launch.
 
-**Applicaiton = Integration**
+Inspect the tag detections on the image topic to confirm that it is working.
 
-To create any application in ROS we need to integrate several modules together. From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our apriltag.
+To create any "application" in ROS we need to integrate several modules/nodes together.
+From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our apriltag.
 
- + Module 1 : Apriltag detection 
-    - output: tf from `camera_link` to `tag_link`
-    
-What we want is to grasp the object with the tag
- 
- + Module 3 : Object grasping
-    - output: arm and hand trajectory msgs
-    - input: pose of the object (`geometry_msgs/Pose`)
- 
- We are not quite there! the output of module 1 does not match the input of module 3. We need module 2.
- 
- ### Transform listener
- 
- Have a look at the node `transform_tag_location.cpp` located in `manipulation`.
- 
- Run this node and see what it does. Modify it so we obtain a `geometry_msgs/Pose` out of it.
- 
- **ACTION**
-Run `transform_tag_location`node and modify it to get a `geometry_msgs/Pose`.
- 
- <details><summary>Click for Hint</summary>
++ Module 1 : Apriltag detection
+  - input: image from the Kinect 
+  - output: tf (`tf2_msgs/TFMessage`) from `camera_link` to `tag_link`
 
+What we want is to grasp the object with the tag.
+ 
++ Module 3 : Object grasping
+  - input: pose of the object (`geometry_msgs/Pose`)
+  - output: arm and hand trajectory msgs
+ 
+We are not quite there! The output of module 1 does not match the input of module 3.
+We need module 2.
+Have a look at the node `transform_tag_location.cpp` located in `manipulation`.
+Run this node and see what it does. Modify it so we obtain a `geometry_msgs/Pose` out of it.
+ 
+<details><summary>Click for a Hint</summary>
 <p>
 
-Don't worry about the orientation.
+---
 
-The transform should be from the `planning frame` to the tag frame . You can find out the planning frame when running `moveit_expl`
+The transform should be from the `planning frame` to the tag frame.
+You can find out the planning frame when running `moveit_expl`.
 
-`rqt_tf_tree` adn `tf_monitor` might be useful
+`rqt_tf_tree` and `tf_monitor` might be useful
+
+---
 
 </p> 
-
 </details>
 <br>
 
 You should now have the module 2:
 
- + Module 2 : msg transform
-    - output: pose of the object (`geometry_msgs/Pose`)
-    - input: tf from `planning frame` to `tag_link`
-
-
++ Module 2 : msg transform
+  - output: pose of the object (`geometry_msgs/Pose`)
+  - input: tf from `planning frame` to `tag_link`
 
 ### The Manipulation Pipeline
 
-We now have all 3 modules required. Make sure that you have module 1 and 2 running. 
+We now have all 3 modules required.
+Make sure that you have module 1 and 2 running. 
 
 <details><summary>Quick Recap</summary>
-  
 <p>
+
+---
 
 To have everything up at running you need to have launched the following:
 
 ```
-roslaunch ur_gazebo ur5_joint_limited.launch
+roslaunch ur_gazebo ur5.launch
 roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch 
 roslaunch apriltags_gazebo apriltag_spawn.launch 
 roslaunch apriltags_gazebo continuous_detection.launch  
 rosrun manipulation transform_tag_location 
 ```
 
-</p> 
+---
 
+</p> 
 </details>
 <br>
 
-**Note: It is about time to create a launch file**
+We have already created the node which uses MoveIt to move the arm to the cube and "moveit" (almost).
+The node is called `object_grasp_server`.
+You should see the arm move to a home position, and the terminal should read `"tag detected"` if all the required nodes are running. 
 
-Now run `object_grasp_server`. You should see the arm move to a home position. In the terminal, you should see `"tag detected"` if all the required nodes are running. 
+It should tell you what it is waiting for, so go ahead and see how you can tell it to move.
 
-As it name indicate, `object_grasp_server` is a server waiting for a request. Find out what the name of the service is.
-
-<details><summary>Hint</summary>
-  
+<details><summary>Click for a Hint</summary>  
 <p>
+
+---
 
 Use `rosnode info` or `rosservice list`
 
-</p> 
+---
 
+</p> 
 </details>
 <br>
 
-**ACTION**
-Call the service from a terminal and observe the robots behaviour. 
+You should clearly see that the part that is missing is the actual grasping of the hand.
+Modify `object_grasp_server.cpp` to make hand grasp the object and then release it onto the second stand.
 
+**<span style="color:red">Very Important Information!</span>**
 
-**ACTION**
-Modify `object_grasp_server.cpp` to make hand grasp the object and that arm drop it on the second stand.
-
-<details><summary>Hint</summary>
-  
-<p>
-
-Refer to the previous example `moveit_expl.cpp`
-
-/*################Place your code here ##############*/
-Indicates where to add code
-
-Some line only need to be commented out
-
-</p> 
-
-</details>
-<br>
-
-**Note: We are tricking gazebo to attach the object to the gripper**
-
-**Note: The gripper model is very sensitive and might break down if it hit the environment. In this case, restart the simulation**
+We are tricking gazebo to attach the object to the gripper.
+The gripper model is very sensitive and might break down if it hits the environment.
+Restart the simulation if it does.
 
 ## Strech Goals 
 
 **Goal:** make the arm grasp the object while avoiding the environment
 
-Restart the Gazebo simulation , move the arm to home positionm and launch `obsatcle_apriltag_spawn`. Grasp the object without hittting obstacles.
+Restart the Gazebo simulation , move the arm to home position and launch `obsatcle_apriltag_spawn`.
+Grasp the object without hittting obstacles.
 
 
-<details><summary>Hint</summary>
-  
+<details><summary>Click for a Hint</summary>
 <p>
+
+---
 
 Moveit will do the obstacle avoidance for you provided an OctoMap
 
@@ -533,7 +522,8 @@ An OctoMap can be created using a depth camera
 
 Consult the [moveit tutorial](https://ros-planning.github.io/moveit_tutorials/doc/perception_pipeline/perception_pipeline_tutorial.html) 
 
-</p> 
+---
 
+</p>
 </details>
 <br>
