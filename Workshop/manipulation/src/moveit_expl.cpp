@@ -54,6 +54,8 @@ int main(int argc, char **argv)
 	ROS_INFO("Reference frame: %s", arm.getEndEffectorLink().c_str());
 
 	// Showing off Pose Goal
+	working_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
+	working_pose.position.x -= 0.1;
 	ROS_WARN
 	(
 		"Moving arm to Pose:\nx:%f\ny:%f\nz:%f\n",
@@ -61,8 +63,6 @@ int main(int argc, char **argv)
 		working_pose.position.y,
 		working_pose.position.z
 	);
-	working_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
-	working_pose.position.x -= 0.1;
 	arm.setPoseTarget(working_pose);
 	arm.plan(my_plan);
 	arm.move();
