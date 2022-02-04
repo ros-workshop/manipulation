@@ -29,7 +29,7 @@ int main(int argc, char **argv)
         {
             tf_msg = tfBuffer.lookupTransform("frame", "frame", ros::Time(0), ros::Duration(10.0));
         }
-        catch (tf::TransformException &ex)
+        catch (tf2::TransformException &ex)
         {
             ROS_ERROR("%s", ex.what());
             ros::Duration(1.0).sleep();
