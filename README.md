@@ -377,8 +377,7 @@ You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_
 You should now be able to plan a path and see the robot move in Gazebo.
 Spend some time to use the `Motion planning` rviz plugin.
 
-**Note**: If you're using the `rqt_joint_trajectory_controller` plugin, you will need to have this in an "off" state (red) in order to successfully "Plan and Execute". 
-If you attempt to do so with this in the "on" state (green) the arm will not move.
+**Note**: If you're using the `rqt_joint_trajectory_controller` plugin, you will need to have this in an "*offline*" state (red) in order to successfully "Plan and Execute" using `moveit`. If you attempt to do so with this in the "*online*" state (green) the arm will not move.
 
 
 ## Programmatically using Moveit for Manipulation tasks
