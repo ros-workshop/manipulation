@@ -131,7 +131,8 @@ Can you find the config file where the controllers are defined, and when they ar
 
 ---
 
-The configuration for the arm and gripper controllers are loaded in the very launch file we started the simulation off with.
+The configuration for the arm and gripper controllers are loaded in the very launch file we started the simulation off with ([`ur5.launch`][ur5-launch])
+
 Lines 25 and 26 are below.
 
 ```xml
@@ -139,10 +140,12 @@ Lines 25 and 26 are below.
 <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller gripper_controller" respawn="false" output="screen"/>
 ```
 
-Line 25 shows you where you can find the controller config file.
-Line 26 shows us how this configuration file is used to load the controllers we want, and have them take control of the joints we want them to.
+* **Line 25**: shows you where you can find the controller config file.
+* **Line 26**: shows us how this configuration file is used to load the controllers we want, and have them take control of the joints we want them to.
+
 But, what about the `joint_state_controller`?
-This is contained in another launch file, referenced on line 22 of the `ur_gazebo ur5.launch` file we have been looking at.
+
+This is contained in another launch file, referenced on line 22 of the [`ur_gazebo ur5.launch`][ur5-launch] file we have been looking at.
 
 ```xml
 <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
@@ -157,7 +160,17 @@ This is contained in another launch file, referenced on line 22 of the `ur_gazeb
 
 ### Putting the controllers to use
 
-I recommend installing a simple rqt widget called `rqt_joint_trajectory_controller`.
+I recommend installing a simple rqt widget called [`rqt_joint_trajectory_controller`][ros-rqt-joint-trajectory-controller].
+
+```bash
+sudo apt install ros-noetic-rqt-joint-trajectory-controller
+```
+
+Launch using the following command
+
+```bash
+rqt -s rqt_joint_trajectory_controller
+```
 
 ![traj_controller](./resources/images/traj_controller.png)
 
@@ -202,8 +215,10 @@ Make sure the global options for the fixed frame is set to something that exists
 
 ![robot_model](./resources/images/robot_model_rviz.png)
 
-If it wasn't made clear in the previous workshop lessons, Rviz shows the robot model here using the Transform Tree [tf tree].
-We launched a node called the `robot_state_publisher` which converts the joint states we echoed above into transformations, depicting where the robot limbs are relative to each other.
+If it wasn't made clear in the previous workshop lessons:
+* Rviz shows the robot model here using the Transform Tree [tf tree].
+* We launched a node called the `robot_state_publisher` which converts the joint states we echoed above into transformations, depicting where the robot limbs are relative to each other.
+
 Go ahead and launch the ros graph rqt widget and see what I mean!
 
 <details><summary>See what I mean!</summary>
@@ -215,6 +230,8 @@ Go ahead and launch the ros graph rqt widget and see what I mean!
 
 ---
 
+**Note**: If you are running the `rqt` widgets, you should see an `/arm_controller` topic here as well
+
 </p>
 </details>
 <br>
@@ -225,7 +242,7 @@ Go ahead and launch the ros graph rqt widget and see what I mean!
 We will be lightly touching on how to use MoveIt, but there is a plethora of configuration options you will learn about in due time.
 
 There is a package in the `universal_robot` directory which has "moveit" in its name.
-Search through it and see if any launch stands out to you.
+Search through it and see if any launch file stands out to you. Use `roslaunch` to launch this file.
 
 <details><summary>Click for the answer</summary>
 <p>
@@ -233,7 +250,7 @@ Search through it and see if any launch stands out to you.
 ---
 
 ```bash
- roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch                                                    
+roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch                                                    
 ```
 
 ---
@@ -539,3 +556,6 @@ Consult the [moveit tutorial](https://ros-planning.github.io/moveit_tutorials/do
 <br>
 
 [ros-rqt-controller-manager]: http://wiki.ros.org/rqt_controller_manager
+[ros-rqt-joint-trajectory-controller]: http://wiki.ros.org/rqt_joint_trajectory_controller
+
+[ur5-launch]: ./Workshop/universal_robot/ur_gazebo/launch/ur5.launch
