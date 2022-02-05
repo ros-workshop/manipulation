@@ -261,7 +261,12 @@ roslaunch ur5_moveit_config ur5_moveit_planning_execution.launch
 
 MoveIt comes with an Rviz plugin for planning and executing motions.
 This is all included in the full desktop version of ROS, so you don't need to worry about installing anything new right now.
-In Rviz, load the `MotionPlanning` plugin.
+
+In Rviz, load the `MotionPlanning` plugin using the "Add" button.
+
+Note: If you cannot see this plugin, try installing moveit using `sudo apt install ros-noetic-moveit` and then reload `rviz`
+
+
 
 ![rviz1](./resources/images/MotionPlanning_plugin.png)
 
