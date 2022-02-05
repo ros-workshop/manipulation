@@ -416,6 +416,10 @@ The following topics will be used in the nodes we will be launching shortly:
 
 Make sure to install `apriltag_ros` if you have not done so from the previous workshop session.
 
+```bash
+sudo apt install ros-noetic-apriltag-ros 
+```
+
 Now let's spawn an apriltag in gazebo and start the detection.
 We have a package in this workshop material which will spawn the tag and start a tag detection for the exact tag we just spawned.
 Have a look around and see if you can find it, and the different launch files you need to run.
