@@ -1,45 +1,39 @@
 # Manipulation
 
-In this workshop session we'll learn about _manipulation_, another significant area in robotics.
-Within a Gazebo simulation, we'll control a robotic manipulator using a variety of tools and methods. Note: We'll use "arm" and "manipulator" interchangeably here.
+In this workshop session we'll learn about another important area in robotics called _manipulation_.
+We'll learn how to control a robotic manipulator using a variety of tools and methods within the Gazebo simulator. Note that we'll use "arm" and "manipulator" interchangeably here.
 
 ![Alt Text](./resources/images/manipulation.gif)
-⚠️ FIXME: Can someone please capture a new gif file!
 
 ## Background 
 
-Manipulation occurs when a robot physically interacts with its surroundings, potentially modifying its environment. In this workshop we'll consider two activities required to perform manipulation:  
+Manipulation occurs when a robot interacts physically with its environment, potentially modifying it. While there are many different types of manipulators, a common type are robotic arms such as ABB's [IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120) or Universal Robots' [UR5][UR5]. This type of arm often has an _end-effector_, such as a gripper, and five or more degrees of freedom (DOF). High-DOF manipulators such as these are generally mathmatically complex to control.
 
-+ **Path Planning:**
-Robotic arms such as ABB's [IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120) or Universal Robots' [UR5](https://www.universal-robots.com/products/ur5-robot/) are often used for manipulation. 
-They often have 5-7 degrees of freedom (DOF) such that advanced planning algorithms (e.g. sampling-based planners like [RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree)) are required to find paths in joint and/or end-effector space.
-+ **Grasping:**
-Once the arm knows how to travel from one place to another, It's time to actually grasp something.
-Grasping in a vast and vibrant research topic mostly because how challenging it can be for robots to find suitable grasp poses for everyday objects.
+In this workshop we'll consider two activities required to perform manipulation:  
+
++ **Grasping:** Is a vast and vibrant area of research because it is often challenging to determine the best gripper placement, or grasp pose, for everyday objects. 
+
++ **Path Planning:** Each grasp pose determines where the gripper should be positioned. The planning necessary to position high-DOF arms is complex and requires advanced planning algorithms such as sampling-based planners (e.g. [RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree)).
 
 
 ## Preparation
 
-There are a number of old ROS packages included in this repo by source.
-These packages have been copied in and adapted as they do not exist for `noetic`, and the dependencies they would originally specify are not all available too.
+Several open source ROS packages that haven't been ported to `noetic` have been modified and included in this repository. Install the other dependencies required:
 
 ```bash
-cd <workspace root>
+cd workshop_ws
 rosdep install --from-paths src --ignore-src -r -y
 ```
 
 
 ## Our Simulated Manipulator
 
-We will be using a simulation of a UR5 by Universal Robots for this workshop session.
-The arm will have a Robotiq 2F85 (Which stands for 2 Finger 85mm Span) gripper, or an End Effector [EEF], and a Microsoft Kinect V2 RGBD camera attached.
-Similar to the previous sessions, we will simulate our robot using Gazebo.
+In this workshop session we will use a simulation of a [UR5][UR5] by Universal Robots. The arm will be fitted with a simulated Robotiq [2F85](https://robotiq.com/products/2f85-140-adaptive-robot-gripper) (2 finger, 85mm span) gripper. A simulated Microsoft [Kinect V2](https://en.wikipedia.org/wiki/Kinect) camera will also be attached for perception.
+Similar to the previous sessions we will use Gazebo for simulation.
 
-**<span style="color:red">Known Issue</span>**
-The simulation will sometimes glitch and send the robot into a folded configuration somewhere else in Gazebo.
-You will need to kill the ROS stack and start again if this is the case.
+⚠️ **Note:** Occasionally the Gazebo simulation will glitch and send the robot into a folded configuration. If this occurs, restart the ROS stack.
 
-The package [`ur_gazebo`](./Workshop/universal_robot/ur_gazebo) in the `universal_robots` directory contains a simulation launch file for us already.
+The package [`ur_gazebo`](./Workshop/universal_robot/ur_gazebo) in the `universal_robots` directory contains launch file for the Gazebo simulation.
 Explore the package, and any others you want to see before we dive in, and find a launch file which you believe is the correct entry point/top level launch file.
 
 <details><summary>Click for a hint</summary>
@@ -57,7 +51,7 @@ roslaunch ur_gazebo ur5.launch
 </details>
 <br>
 
-You should see something like this:
+You should see something like this in Gazebo:
 
 ![robot_gazebo](./resources/images/ur5_gazebo.png)
 
@@ -65,7 +59,7 @@ You should see something like this:
 ## Controllers
 
 Every motor for every joint on the robots we control needs a driver to translate our ROS commands into commands specific to the robot we are dealing with.
-Above this, ROS control offers "controllers" which oversee a commanded trajectory and supply the drivers with low level, high frequency commands to ensure that the path taken is correct.
+`ROS control` offers "controllers" which oversee a commanded trajectory and supply the drivers with low level, high frequency commands to ensure that the correct path is taken.
 
 ![ros_control_diagram](./resources/images/ros_control_diagram.png)
 
@@ -79,10 +73,10 @@ Regardless, lets go explore what controllers are running in our simulation, and 
 
 ### Defining the Controllers
 
-I recommend to install an rqt widget called [`rqt_controller_manager`][ros-rqt-controller-manager].
+It is recommended to install an `rqt` widget called [`rqt_controller_manager`][ros-rqt-controller-manager].
 
 ```bash
-sudo apt install ros-noetic-rqt-controller-manager
+sudo apt install ros-$ROS_DISTRO-rqt-controller-manager
 ```
 
 Run this using the below command and let's see what got loaded when we launched our simulation.
@@ -158,10 +152,10 @@ This is contained in another launch file, referenced on line 22 of the [`ur_gaze
 
 ### Putting the controllers to use
 
-I recommend installing a simple rqt widget called [`rqt_joint_trajectory_controller`][ros-rqt-joint-trajectory-controller].
+It is recommended to install a simple `rqt` widget called [`rqt_joint_trajectory_controller`][ros-rqt-joint-trajectory-controller].
 
 ```bash
-sudo apt install ros-noetic-rqt-joint-trajectory-controller
+sudo apt install ros-$ROS_DISTRO-rqt-joint-trajectory-controller
 ```
 
 Launch using the following command
@@ -214,12 +208,12 @@ Make sure the global options for the fixed frame is set to something that exists
 ![robot_model](./resources/images/robot_model_rviz.png)
 
 If it wasn't made clear in the previous workshop lessons:
-* Rviz shows the robot model here using the Transform Tree [tf tree].
-* We launched a node called the `robot_state_publisher` which converts the joint states we echoed above into transformations, depicting where the robot limbs are relative to each other.
+* Rviz displays the robot model using the `tf tree` (transform tree).
+* The `robot_state_publisher` node converts the joint states we echoed above into transformations, depicting where the robot limbs are relative to each other.
 
-Go ahead and launch the ros graph rqt widget and see what I mean!
+Launch the ROS graph `rqt` widget to see how the nodes are arranged.
 
-<details><summary>See what I mean!</summary>
+<details><summary>Click to show the ROS graph</summary>
 <p>
 
 ---
@@ -228,7 +222,7 @@ Go ahead and launch the ros graph rqt widget and see what I mean!
 
 ---
 
-**Note**: If you are running the `rqt` widgets, you should see an `/arm_controller` topic here as well
+⚠️ **Note:** If you are running the `rqt` widgets, you should see an `/arm_controller` topic here as well
 
 </p>
 </details>
@@ -236,7 +230,7 @@ Go ahead and launch the ros graph rqt widget and see what I mean!
 
 ## MoveIt
 
-[Moveit](https://moveit.ros.org/) is a very powerful tool within the ROS ecosystem for planning manipulation motions.
+[MoveIt](https://moveit.ros.org/) is a very powerful tool within the ROS ecosystem for planning manipulation motions.
 We will be lightly touching on how to use MoveIt, but there is a plethora of configuration options you will learn about in due time.
 
 There is a package in the `universal_robot` directory which has "moveit" in its name.
@@ -262,7 +256,7 @@ This is all included in the full desktop version of ROS, so you don't need to wo
 
 In Rviz, load the `MotionPlanning` plugin using the "Add" button.
 
-Note: If you cannot see this plugin, try installing moveit using `sudo apt install ros-noetic-moveit` and then reload `rviz`
+⚠️ **Note:** If you cannot see this plugin, try installing MoveIt using `sudo apt install ros-$ROS_DISTRO-moveit` and then reload `rviz`
 
 
 
@@ -295,7 +289,7 @@ Something is wrong in our moveit configuration.
 </details>
 <br>
 
-### Moveit setup assistant
+### MoveIt Setup Assistant
 
 MoveIt has a very large number of configuration files and factors to consider.
 Luckily, MoveIt has a setup assistant which gives us a GUI to create and edit these moveit configuration packages.
@@ -309,7 +303,7 @@ We will use this tool to fix our forked package.
 ---
 
 ```bash
-sudo apt install ros-noetic-moveit-setup-assistant
+sudo apt install ros-$ROS_DISTRO-moveit-setup-assistant
 roslaunch moveit_setup_assistant setup_assistant.launch
 ```
 
@@ -329,10 +323,9 @@ Now take a look at the `Self-Collision` tab since our issue had to do with link 
 You will notice that there are no collisions defined.
 Go ahead and generate a collision matrix. 
 
-**NOTE: The gripper is not visible in the robot model**
-This will be important later.
+⚠️ **Note:** The gripper is not visible in the robot model, this will be important later.
 
-<details><summary>Comeback here if you are stuck debugging later</summary>
+<details><summary>Return here if you get stuck debugging later</summary>
 <p>
 
 ---
@@ -359,7 +352,7 @@ The name of the groups are important to know.
 The `End Effectors` tab is where we define the end-effector of our robot.
 It won't be used this time.
 
-If you want to understand the Moveit setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
+If you want to understand the MoveIt setup assistant better, go through this [tutorial](https://ros-planning.github.io/moveit_tutorials/doc/setup_assistant/setup_assistant_tutorial.html) in your own time.
 
 You can now go to the bottom most tab `Configuration Files`.
 This is where we generate the moveit pkg and all relevant files.
@@ -375,15 +368,15 @@ You can now leave the setup assistant and retry launching `roslaunch ur5_moveit_
 You should now be able to plan a path and see the robot move in Gazebo.
 Spend some time to use the `Motion planning` rviz plugin.
 
-**Note**: If you're using the `rqt_joint_trajectory_controller` plugin, you will need to have this in an "*offline*" state (red) in order to successfully "Plan and Execute" using `moveit`. If you attempt to do so with this in the "*online*" state (green) the arm will not move.
+⚠️ **Note:** If you're using the `rqt_joint_trajectory_controller` plugin, you will need to have this in an "*offline*" state (red) in order to successfully "Plan and Execute" using `moveit`. If you attempt to do so with this in the "*online*" state (green) the arm will not move.
 
 
-## Programmatically using Moveit for Manipulation tasks
+## Programmatically using MoveIt for Manipulation tasks
 
 Obviously we want to use our newly acquired super-tool to do more than move an arm around using Rviz.
 It is time to create an application for our arm.
 A common one is to grasp an object which position is determined using sensors.
-Here we will be using an image and apriltags.
+Here we will use an image and April Tags.
 
 Before that, though, run the following node to see what it does.
 Then, inspect the source code to see how it does it.
@@ -392,7 +385,7 @@ Then, inspect the source code to see how it does it.
 rosrun manipulation moveit_expl
 ```
 
-### Apriltag Detection
+### April Tag Detection
 
 Check that you are getting images and point clouds from the simulated Kinect sensor.
 You can do this by listing all topics available and inspecting the ones you believe should be right, inspecting the Gazebo node and seeing which topics if publishes of the correct message type, or going through Rviz and selecting to display the topics of the correct message type.
@@ -415,10 +408,10 @@ The following topics will be used in the nodes we will be launching shortly:
 Make sure to install `apriltag_ros` if you have not done so from the previous workshop session.
 
 ```bash
-sudo apt install ros-noetic-apriltag-ros 
+sudo apt install ros-$ROS_DISTRO-apriltag-ros 
 ```
 
-Now let's spawn an apriltag in gazebo and start the detection.
+Now let's spawn an April Tag in Gazebo and start the detection.
 We have a package in this workshop material which will spawn the tag and start a tag detection for the exact tag we just spawned.
 Have a look around and see if you can find it, and the different launch files you need to run.
 
@@ -438,7 +431,7 @@ roslaunch apriltags_gazebo continuous_detection.launch
 </details>
 <br>
 
-If you can't see the apriltag cube in Gazebo, check the loaded models in the left-hand pane and right click -> "Move To".
+If you can't see the April Tag cube in Gazebo, check the loaded models in the left-hand pane and right click -> "Move To".
 It may be in a surprising place!
 Move the tag to the right place manually.
 Alternatively, close everything down, make the changes to the model spawn launch as you see fit, and re-launch.
@@ -446,9 +439,9 @@ Alternatively, close everything down, make the changes to the model spawn launch
 Inspect the tag detections on the image topic to confirm that it is working.
 
 To create any "application" in ROS we need to integrate several modules/nodes together.
-From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our apriltag.
+From the [perception](https://github.com/ros-workshop/perception) workshop, we now have the pose of our April Tag.
 
-+ Module 1 : Apriltag detection
++ Module 1 : April Tag detection
   - input: image from the Kinect 
   - output: tf (`tf2_msgs/TFMessage`) from `camera_link` to `tag_link`
 
@@ -533,17 +526,14 @@ Use `rosnode info` or `rosservice list`
 You should clearly see that the part that is missing is the actual grasping of the hand.
 Modify `object_grasp_server.cpp` to make hand grasp the object and then release it onto the second stand.
 
-**<span style="color:red">Very Important Information!</span>**
-
-We are tricking gazebo to attach the object to the gripper.
-The gripper model is very sensitive and might break down if it hits the environment.
-Restart the simulation if it does.
+⚠️ **Note:** We are tricking Gazebo to attach the object to the gripper.
+This gripper model is unstable and might degenerate if it collides with the environment. Restart the simulation if it does.
 
 ## Stretch Goals 
 
 **Goal:** make the arm grasp the object while avoiding the environment
 
-Restart the Gazebo simulation , move the arm to home position and launch `obsatcle_apriltag_spawn`.
+Restart the Gazebo simulation , move the arm to home position and launch `obstacle_apriltag_spawn`.
 Grasp the object without hitting obstacles.
 
 
@@ -552,11 +542,11 @@ Grasp the object without hitting obstacles.
 
 ---
 
-Moveit will do the obstacle avoidance for you provided an OctoMap
+MoveIt will do the obstacle avoidance for you provided an OctoMap
 
 An OctoMap can be created using a depth camera
 
-Consult the [moveit tutorial](https://ros-planning.github.io/moveit_tutorials/doc/perception_pipeline/perception_pipeline_tutorial.html) 
+Consult the [MoveIt tutorial](https://ros-planning.github.io/moveit_tutorials/doc/perception_pipeline/perception_pipeline_tutorial.html) 
 
 ---
 
@@ -568,3 +558,4 @@ Consult the [moveit tutorial](https://ros-planning.github.io/moveit_tutorials/do
 [ros-rqt-joint-trajectory-controller]: http://wiki.ros.org/rqt_joint_trajectory_controller
 
 [ur5-launch]: ./Workshop/universal_robot/ur_gazebo/launch/ur5.launch
+[UR5]: https://www.universal-robots.com/products/ur5-robot
