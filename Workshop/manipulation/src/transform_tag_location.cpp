@@ -1,7 +1,5 @@
 #include <ros/ros.h>
-#include <tf/transform_broadcaster.h>
-#include <tf/transform_listener.h>
-#include <tf/transform_datatypes.h>
+#include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/TransformStamped.h>
 
@@ -22,24 +20,22 @@ int main(int argc, char **argv)
 	geometry_msgs::TransformStamped tf_msg;
     ros::NodeHandle node;
 
-    tf::TransformListener listener;
-    tf::StampedTransform transform;
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+
     while (ros::ok())
     {
         try
         {
-            listener.waitForTransform("/frame_name", "/frame_name", ros::Time(0), ros::Duration(9.0));
-            listener.lookupTransform("/frame_name", "/frame_name", ros::Time(0), transform);
+            tf_msg = tfBuffer.lookupTransform("frame", "frame", ros::Time(0), ros::Duration(10.0));
         }
-        catch (tf::TransformException &ex)
+        catch (tf2::TransformException &ex)
         {
             ROS_ERROR("%s", ex.what());
             ros::Duration(1.0).sleep();
             continue;
         }
         
-        transformStampedTFToMsg(transform,tf_msg);
-		
         msg.position.x=tf_msg.transform.translation.x;
         msg.position.y=tf_msg.transform.translation.y;
         msg.position.z=tf_msg.transform.translation.z;
