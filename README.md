@@ -1,20 +1,18 @@
 # Manipulation
 
-Through this session, we will be familiarising ourselves with one of the major facets of robotics, *manipulation*.
-We will be controlling a Gazebo simulation of a robotic arm, called a *"Manipulator"*, using a variety of tools and methods to perform simple tasks in this workshop.
+In this workshop session we'll learn about _manipulation_, another significant area in robotics.
+Within a Gazebo simulation, we'll control a robotic manipulator using a variety of tools and methods. Note: We'll use "arm" and "manipulator" interchangeably here.
 
 ![Alt Text](./resources/images/manipulation.gif)
-
+⚠️ FIXME: Can someone please capture a new gif file!
 
 ## Background 
 
-We refer to manipulation when we are talking about a robot physically interacting with its surroundings and modifying its environment.
-We will be looking at two of the main areas under the manipulation umbrella during this workshop; **Path Planning** and **Grasping**.
+Manipulation occurs when a robot physically interacts with its surroundings, potentially modifying its environment. In this workshop we'll consider two activities required to perform manipulation:  
 
 + **Path Planning:**
-Generally, a robotic arm is used for manipulation ([ABB IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120), [UR5](https://www.universal-robots.com/products/ur5-robot/)).
-An arm often has between 5 and 7 Dof.
-Powerful planning algorithms must be used ([RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree) for example) to find a path in joint or end-effector space.
+Robotic arms such as ABB's [IRB 120](https://new.abb.com/products/robotics/industrial-robots/irb-120) or Universal Robots' [UR5](https://www.universal-robots.com/products/ur5-robot/) are often used for manipulation. 
+They often have 5-7 degrees of freedom (DOF) such that advanced planning algorithms (e.g. sampling-based planners like [RRTs](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree)) are required to find paths in joint and/or end-effector space.
 + **Grasping:**
 Once the arm knows how to travel from one place to another, It's time to actually grasp something.
 Grasping in a vast and vibrant research topic mostly because how challenging it can be for robots to find suitable grasp poses for everyday objects.
