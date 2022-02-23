@@ -181,9 +181,7 @@ Open up a fresh Rviz window, and we will incrementally add to it as we go.
 
 ### Robot Model
 
-Let's check that we are receiving feedback from the robot through the `/joint_states` topic before we get to the Rviz window.
-
-You should see something like:
+Let's check that we are receiving feedback from the robot through the `/joint_states` topic before we get to the Rviz window. You should see something like:
 
 ```yaml
 header: 
@@ -256,8 +254,7 @@ This is all included in the full desktop version of ROS, so you don't need to wo
 
 In Rviz, load the `MotionPlanning` plugin using the "Add" button.
 
-⚠️ **Note:** If you cannot see this plugin, try installing MoveIt using `sudo apt install ros-$ROS_DISTRO-moveit` and then reload `rviz`
-
+⚠️ **Note:** If you cannot see this plugin, try installing MoveIt using `sudo apt install ros-$ROS_DISTRO-moveit` and then restart `rviz`
 
 
 ![rviz1](./resources/images/MotionPlanning_plugin.png)
@@ -513,11 +510,7 @@ It should tell you what it is waiting for, so go ahead and see how you can tell 
 <details><summary>Click for a Hint</summary>  
 <p>
 
----
-
 Use `rosnode info` or `rosservice list`
-
----
 
 </p> 
 </details>
@@ -527,7 +520,7 @@ You should clearly see that the part that is missing is the actual grasping of t
 Modify `object_grasp_server.cpp` to make hand grasp the object and then release it onto the second stand.
 
 ⚠️ **Note:** We are tricking Gazebo to attach the object to the gripper.
-This gripper model is unstable and might degenerate if it collides with the environment. Restart the simulation if it does.
+This gripper model is unstable and might degenerate if it collides with the environment. If this happens, you'll need to restart the simulation.
 
 ## Stretch Goals 
 
