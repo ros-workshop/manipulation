@@ -262,6 +262,9 @@ int main(int argc, char **argv)
 				tag_pose.position.z
 			);
 
+			// --------------------------
+			// Setup for grasping the tag
+			// --------------------------
 			tag_pose.position.z += 0.25; //offset by .25 meters in the z axis
 			tag_pose.position.x -= 0.05;
 			tag_pose.position.y += 0.05;
@@ -290,6 +293,9 @@ int main(int argc, char **argv)
 			}
 			sleep(1.0); // Ensure it is definately stopped.
 
+			// --------------------------
+			// Move down to tag and grasp
+			// --------------------------
 			/*************ADD SOME CODE HERE (START)**********
 			|
 			|
@@ -307,12 +313,36 @@ int main(int argc, char **argv)
 			//graspObj.AttachGripper(); // Attaching object
 			ROS_INFO("Attaching objects");
 
+			// ------------------------------------------------
+			// Move tag away from surface and to next pedastool
+			// ------------------------------------------------
 			tag_pose.position.z += 0.2; //raising cube in the air
 			arm.setPoseTarget(tag_pose, arm.getEndEffectorLink().c_str());
-			arm.plan(my_plan); // check if plan succeded
-			arm.move();
-
-			// moving object to next stand
+			if (arm.plan(my_plan) != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If the plan fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"MoveIt wasn't able to make a plan to lift the Tag.\n"
+					"The item will be dropped now, and you man need to restart "
+					"this simulation if the tag is unrecoverable"
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			if (arm.move() != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If execution fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"The arm wasn't able to lift the tag.\n"
+					"The item will be dropped now, and you man need to restart "
+					"this simulation if the tag is unrecoverable"
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			sleep(1.0);
 
 			/*************ADD SOME CODE HERE (START)**********
 			|
@@ -323,12 +353,9 @@ int main(int argc, char **argv)
 			|
 			************ADD SOME CODE HERE (END)**************/
 
-			sleep(1.0);
-			arm.setPoseTarget(tag_pose, arm.getEndEffectorLink().c_str());
-			arm.plan(my_plan); // check if plan succeded
-			arm.move();
-			sleep(1.0);
-
+			// --------------------------------
+			// Releasing the Tag and going home
+			// --------------------------------
 			ROS_INFO("Detaching Object");
 			graspObj.DetachGripper(); // Detaching object
 			graspObj.CloseGripper(0.0);
@@ -336,8 +363,27 @@ int main(int argc, char **argv)
 
 			ROS_INFO("Moving to Home");
 			arm.setNamedTarget("home");
-			arm.plan(my_plan);
-			arm.move();
+			if (arm.plan(my_plan) != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If the plan fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"MoveIt wasn't able to make a plan to home."
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			if (arm.move() != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If execution fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"The arm wasn't able to make it home."
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			sleep(1.0);
 			ROS_INFO("finished motion plan");
 			graspObj.setSuccess(true);
 
