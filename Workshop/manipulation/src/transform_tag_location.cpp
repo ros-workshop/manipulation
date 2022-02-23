@@ -19,6 +19,7 @@ int main(int argc, char **argv)
 	geometry_msgs::Pose msg;
 	geometry_msgs::TransformStamped tf_msg;
     ros::NodeHandle node;
+    ros::Publisher pub = node.advertise<geometry_msgs::Pose>("/tag_pose", 5);
 
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener(tfBuffer);
@@ -27,7 +28,7 @@ int main(int argc, char **argv)
     {
         try
         {
-            tf_msg = tfBuffer.lookupTransform("frame", "frame", ros::Time(0), ros::Duration(10.0));
+            tf_msg = tfBuffer.lookupTransform("world", "tag_0", ros::Time(0), ros::Duration(10.0));
         }
         catch (tf2::TransformException &ex)
         {
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
         msg.orientation.y=tf_msg.transform.rotation.y;
         msg.orientation.z=tf_msg.transform.rotation.z;
         msg.orientation.w=tf_msg.transform.rotation.w;
-        
+        pub.publish(msg);
         ros::spinOnce();
     }
     return 0;
