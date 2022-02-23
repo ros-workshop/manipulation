@@ -9,7 +9,6 @@
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <gazebo_ros_link_attacher/Attach.h>
 
-
 // Look for spelling mistake and commented lines
 // Look for the following commented lines in the code to guide you on where to
 // add your own code
@@ -48,7 +47,7 @@ private:
 	ros::NodeHandle n;
 	ros::Subscriber pose_sub;
 	bool _execute_grasp;
-	bool _succeeded;
+	bool _action_complete;
 	bool _srv_success;
 	ros::Publisher gripper_grasp_pub;
 	trajectory_msgs::JointTrajectory _gripper_angle_traj;
@@ -60,10 +59,10 @@ private:
 
 GraspTag::GraspTag(ros::NodeHandle* nh):n(*nh)
 {
-	pose_sub = n.subscribe("/tag_pose", 1000, &GraspTag::setPoseCallback, this);
+	pose_sub = n.subscribe("/tag_pose", 3, &GraspTag::setPoseCallback, this);
 	gripper_grasp_pub = n.advertise<trajectory_msgs::JointTrajectory>
 	(
-		"/gripper_controller/command", 1000
+		"/gripper_controller/command", 2
 	);
 	attach_tag_client = n.serviceClient<gazebo_ros_link_attacher::Attach>
 	(
@@ -90,8 +89,8 @@ bool GraspTag::serviceCallback
 	ROS_INFO("service called");
 
 	_execute_grasp = true;
-	_succeeded = false;
-	while (_succeeded == false && !ros::isShuttingDown())
+	_action_complete = false;
+	while (_action_complete == false && !ros::isShuttingDown())
 	{
 		sleep(0.1);
 	}
@@ -111,9 +110,7 @@ bool GraspTag::serviceCallback
 
 void GraspTag::setPoseCallback(const geometry_msgs::Pose::ConstPtr &pose)
 {
-	target_pose.position = pose->position;
-	target_pose.orientation.x = 0.7071;
-	target_pose.orientation.w = 0.7071;
+	target_pose = *pose;
 }
 
 geometry_msgs::Pose GraspTag::getTarget()
@@ -129,7 +126,7 @@ void GraspTag::DontExecuteGrasp()
 void GraspTag::setSuccess(bool success)
 {
 	_srv_success = success;
-	_succeeded = true;
+	_action_complete = true;
 }
 
 bool GraspTag::ExecuteGrasp()
@@ -180,22 +177,19 @@ void GraspTag::DetachGripper()
 
 int main(int argc, char **argv)
 {
-	// Delcarations
+	// Declarations
 	ros::init(argc, argv, "object_grasp_server");
 	ros::NodeHandle n;
 	ros::AsyncSpinner spinner(2);
 	spinner.start();
-	ros::Rate loop_rate(1);
+	ros::Rate loop_rate(1.0);
+	GraspTag graspObj(&n); // Instance of the class GraspTag
 
-	geometry_msgs::Pose temp_pose; // Temporary pose to check when the same
-		// target is receive
-	GraspTag grasObj(&n); // Instance of the class GraspTag
-	moveit::planning_interface::MoveGroupInterface::Plan my_plan; // Plan
-		// containing the trajectory
-	static const std::string PLANNING_GROUP = "manipulator"; // Planning group
+	// MoveIt Classes -> Highly recommended to google these when you can!
+	moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+	static const std::string PLANNING_GROUP = "manipulator";
 	moveit::planning_interface::PlanningSceneInterface
-		planning_scene_interface; // planning interface
-	// Planning group
+		planning_scene_interface;
 	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP);
 
 	// Can be modified as desired
@@ -205,7 +199,6 @@ int main(int argc, char **argv)
 
 	ROS_INFO("Reference frame: %s", arm.getPlanningFrame().c_str());
 	ROS_INFO("Reference frame: %s", arm.getEndEffectorLink().c_str());
-	temp_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
 	ROS_INFO("Pose:HOME");
 	arm.setNamedTarget("home");
 	arm.plan(my_plan); // Check if plan succeded
@@ -215,44 +208,44 @@ int main(int argc, char **argv)
 	// creating the server called grasp
 	ros::ServiceServer service = n.advertiseService
 	(
-		"grasp", &GraspTag::serviceCallback, &grasObj
+		"grasp", &GraspTag::serviceCallback, &graspObj
 	);
 
 	while (ros::ok) // keep on running until stopped
 	{
-		grasObj.DontExecuteGrasp();
+		graspObj.DontExecuteGrasp();
 
 		ROS_WARN("waiting for tag positions");
 		ros::topic::waitForMessage<geometry_msgs::Pose>("/tag_pose");
 		ROS_INFO("Received tag position");
-		grasObj.CloseGripper(0.0);
+		graspObj.CloseGripper(0.0);
 		ROS_INFO("Ready for Grasp service call");
 
-		while (!grasObj.ExecuteGrasp() && !ros::isShuttingDown())
+		while (!graspObj.ExecuteGrasp() && !ros::isShuttingDown())
 		{
 			//wait
 			loop_rate.sleep();
 		}
 
 		ROS_INFO("Grasp server active");
-		temp_pose = grasObj.getTarget(); // Set the desired pose to the position
-			// of the cube
+		geometry_msgs::Pose tag_pose;
+		tag_pose = graspObj.getTarget(); // Target the tag position
 		ROS_INFO
 		(
-			"Tag location:\n x:%lf \n c:%lf \n z:%lf",
-			temp_pose.position.x,
-			temp_pose.position.y,
-			temp_pose.position.z
+			"Tag location:\n x:%lf \n y:%lf \n z:%lf",
+			tag_pose.position.x,
+			tag_pose.position.y,
+			tag_pose.position.z
 		);
 
-		temp_pose.position.z += 0.25; //offset by .25 meters in the z axis
-		temp_pose.position.x -= 0.05;
-		temp_pose.position.y += 0.05;
-		temp_pose.orientation.w = 0.707;
-		temp_pose.orientation.x = 0.0;
-		temp_pose.orientation.y = 0.707;
-		temp_pose.orientation.z = 0.0; // and pointed straight down
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+		tag_pose.position.z += 0.25; //offset by .25 meters in the z axis
+		tag_pose.position.x -= 0.05;
+		tag_pose.position.y += 0.05;
+		tag_pose.orientation.w = 0.707;
+		tag_pose.orientation.x = 0.0;
+		tag_pose.orientation.y = 0.707;
+		tag_pose.orientation.z = 0.0; // and pointed straight down
+		arm.setPoseTarget(tag_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
 		arm.move();
 		sleep(1.0);
@@ -268,14 +261,14 @@ int main(int argc, char **argv)
 
 		sleep(1.0);
 		ROS_INFO("Closing Gripper");
-		grasObj.CloseGripper(0.25); // closing gripper
+		graspObj.CloseGripper(0.25); // closing gripper
 		sleep(1.0);
 
-		//grasObj.AttachGripper(); // Attaching object
+		//graspObj.AttachGripper(); // Attaching object
 		ROS_INFO("Attaching objects");
 
-		temp_pose.position.z += 0.2; //raising cube in the air
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+		tag_pose.position.z += 0.2; //raising cube in the air
+		arm.setPoseTarget(tag_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
 		arm.move();
 
@@ -291,14 +284,14 @@ int main(int argc, char **argv)
 		************ADD SOME CODE HERE (END)**************/
 
 		sleep(1.0);
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
+		arm.setPoseTarget(tag_pose, arm.getEndEffectorLink().c_str());
 		arm.plan(my_plan); // check if plan succeded
 		arm.move();
 		sleep(1.0);
 
 		ROS_INFO("Detaching Object");
-		grasObj.DetachGripper(); // Detaching object
-		grasObj.CloseGripper(0.0);
+		graspObj.DetachGripper(); // Detaching object
+		graspObj.CloseGripper(0.0);
 		sleep(1);
 
 		ROS_INFO("Moving to Home");
@@ -306,9 +299,8 @@ int main(int argc, char **argv)
 		arm.plan(my_plan);
 		arm.move();
 		ROS_INFO("finished motion plan");
-		grasObj.setSuccess(true);
+		graspObj.setSuccess(true);
 
-		ros::spinOnce();
 		loop_rate.sleep();
 	}
 	return 0;
