@@ -211,7 +211,7 @@ int main(int argc, char **argv)
 		"grasp", &GraspTag::serviceCallback, &graspObj
 	);
 
-	while (ros::ok) // keep on running until stopped
+	while (ros::ok()) // keep on running until stopped
 	{
 		graspObj.DontExecuteGrasp();
 
@@ -225,6 +225,10 @@ int main(int argc, char **argv)
 		{
 			//wait
 			loop_rate.sleep();
+		}
+		if (ros::isShuttingDown())
+		{
+			break;
 		}
 
 		ROS_INFO("Grasp server active");
