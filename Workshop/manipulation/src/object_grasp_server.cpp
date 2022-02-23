@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 
 	// Can be modified as desired
 	arm.setPlannerId("RRTConnect");
-	arm.setGoalTolerance(0.0001);
+	arm.setGoalTolerance(0.1);
 	arm.setPlanningTime(5.0);
 
 	ROS_INFO("Reference frame: %s", arm.getPlanningFrame().c_str());
@@ -310,7 +310,7 @@ int main(int argc, char **argv)
 			graspObj.CloseGripper(0.25); // closing gripper
 			sleep(1.0);
 
-			//graspObj.AttachGripper(); // Attaching object
+			graspObj.AttachGripper(); // Attaching object
 			ROS_INFO("Attaching objects");
 
 			// ------------------------------------------------
