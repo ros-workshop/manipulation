@@ -9,7 +9,6 @@
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <gazebo_ros_link_attacher/Attach.h>
 
-
 // Look for spelling mistake and commented lines
 // Look for the following commented lines in the code to guide you on where to
 // add your own code
@@ -48,7 +47,7 @@ private:
 	ros::NodeHandle n;
 	ros::Subscriber pose_sub;
 	bool _execute_grasp;
-	bool _succeeded;
+	bool _action_complete;
 	bool _srv_success;
 	ros::Publisher gripper_grasp_pub;
 	trajectory_msgs::JointTrajectory _gripper_angle_traj;
@@ -60,10 +59,10 @@ private:
 
 GraspTag::GraspTag(ros::NodeHandle* nh):n(*nh)
 {
-	pose_sub = n.subscribe("/tag_pose", 1000, &GraspTag::setPoseCallback, this);
+	pose_sub = n.subscribe("/tag_pose", 3, &GraspTag::setPoseCallback, this);
 	gripper_grasp_pub = n.advertise<trajectory_msgs::JointTrajectory>
 	(
-		"/gripper_controller/command", 1000
+		"/gripper_controller/command", 2
 	);
 	attach_tag_client = n.serviceClient<gazebo_ros_link_attacher::Attach>
 	(
@@ -90,8 +89,8 @@ bool GraspTag::serviceCallback
 	ROS_INFO("service called");
 
 	_execute_grasp = true;
-	_succeeded = false;
-	while (_succeeded == false && !ros::isShuttingDown())
+	_action_complete = false;
+	while (_action_complete == false && !ros::isShuttingDown())
 	{
 		sleep(0.1);
 	}
@@ -111,9 +110,7 @@ bool GraspTag::serviceCallback
 
 void GraspTag::setPoseCallback(const geometry_msgs::Pose::ConstPtr &pose)
 {
-	target_pose.position = pose->position;
-	target_pose.orientation.x = 0.7071;
-	target_pose.orientation.w = 0.7071;
+	target_pose = *pose;
 }
 
 geometry_msgs::Pose GraspTag::getTarget()
@@ -129,7 +126,7 @@ void GraspTag::DontExecuteGrasp()
 void GraspTag::setSuccess(bool success)
 {
 	_srv_success = success;
-	_succeeded = true;
+	_action_complete = true;
 }
 
 bool GraspTag::ExecuteGrasp()
@@ -180,22 +177,19 @@ void GraspTag::DetachGripper()
 
 int main(int argc, char **argv)
 {
-	// Delcarations
+	// Declarations
 	ros::init(argc, argv, "object_grasp_server");
 	ros::NodeHandle n;
 	ros::AsyncSpinner spinner(2);
 	spinner.start();
-	ros::Rate loop_rate(1);
+	ros::Rate loop_rate(1.0);
+	GraspTag graspObj(&n); // Instance of the class GraspTag
 
-	geometry_msgs::Pose temp_pose; // Temporary pose to check when the same
-		// target is receive
-	GraspTag grasObj(&n); // Instance of the class GraspTag
-	moveit::planning_interface::MoveGroupInterface::Plan my_plan; // Plan
-		// containing the trajectory
-	static const std::string PLANNING_GROUP = "manipulator"; // Planning group
+	// MoveIt Classes -> Highly recommended to google these when you can!
+	moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+	static const std::string PLANNING_GROUP = "manipulator";
 	moveit::planning_interface::PlanningSceneInterface
-		planning_scene_interface; // planning interface
-	// Planning group
+		planning_scene_interface;
 	moveit::planning_interface::MoveGroupInterface arm(PLANNING_GROUP);
 
 	// Can be modified as desired
@@ -205,111 +199,196 @@ int main(int argc, char **argv)
 
 	ROS_INFO("Reference frame: %s", arm.getPlanningFrame().c_str());
 	ROS_INFO("Reference frame: %s", arm.getEndEffectorLink().c_str());
-	temp_pose = (arm.getCurrentPose(arm.getEndEffectorLink().c_str())).pose;
 	ROS_INFO("Pose:HOME");
 	arm.setNamedTarget("home");
-	arm.plan(my_plan); // Check if plan succeded
-	arm.move();
-	sleep(4.0);
-
-	// creating the server called grasp
-	ros::ServiceServer service = n.advertiseService
-	(
-		"grasp", &GraspTag::serviceCallback, &grasObj
-	);
-
-	while (ros::ok) // keep on running until stopped
+	if (arm.plan(my_plan) != moveit::core::MoveItErrorCode::SUCCESS)
 	{
-		grasObj.DontExecuteGrasp();
+		// Stop here and try again later if it doesn't work.
+		ROS_ERROR(
+			"MoveIt cannot make a plan to the \"HOME\" position from here!\n"
+			"Reduce the tolerances on the planner, or move the arm to a new "
+			"position and try again."
+		);
+	}
+	else if (arm.move() != moveit::core::MoveItErrorCode::SUCCESS)
+	{
+		// If the execution fails, stop here and wait for new call.
+		ROS_ERROR(
+			"The arm cannot move to \"HOME\" from here, even though moveit "
+			"made a plan successfully!\n"
+			"Reduce the colerances on the execution, or move the arm to a new "
+			"position and try again."
+		);
+	}
+	else
+	{
+		// Wait just to make sure it is stopped
+		sleep(1.0);
 
-		ROS_WARN("waiting for tag positions");
-		ros::topic::waitForMessage<geometry_msgs::Pose>("/tag_pose");
-		ROS_INFO("Received tag position");
-		grasObj.CloseGripper(0.0);
-		ROS_INFO("Ready for Grasp service call");
-
-		while (!grasObj.ExecuteGrasp() && !ros::isShuttingDown())
-		{
-			//wait
-			loop_rate.sleep();
-		}
-
-		ROS_INFO("Grasp server active");
-		temp_pose = grasObj.getTarget(); // Set the desired pose to the position
-			// of the cube
-		ROS_INFO
+		// creating the server called grasp
+		ros::ServiceServer service = n.advertiseService
 		(
-			"Tag location:\n x:%lf \n c:%lf \n z:%lf",
-			temp_pose.position.x,
-			temp_pose.position.y,
-			temp_pose.position.z
+			"grasp", &GraspTag::serviceCallback, &graspObj
 		);
 
-		temp_pose.position.z += 0.25; //offset by .25 meters in the z axis
-		temp_pose.position.x -= 0.05;
-		temp_pose.position.y += 0.05;
-		temp_pose.orientation.w = 0.707;
-		temp_pose.orientation.x = 0.0;
-		temp_pose.orientation.y = 0.707;
-		temp_pose.orientation.z = 0.0; // and pointed straight down
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
-		arm.plan(my_plan); // check if plan succeded
-		arm.move();
-		sleep(1.0);
+		while (ros::ok()) // keep on running until stopped
+		{
+			graspObj.DontExecuteGrasp();
 
-		/*************ADD SOME CODE HERE (START)**********
-		|
-		|
-		|
-		|
-		|
-		|
-		************ADD SOME CODE HERE (END)**************/
+			ROS_WARN("waiting for tag positions");
+			ros::topic::waitForMessage<geometry_msgs::Pose>("/tag_pose");
+			ROS_INFO("Received tag position");
+			graspObj.CloseGripper(0.0);
+			ROS_INFO("Ready for Grasp service call");
 
-		sleep(1.0);
-		ROS_INFO("Closing Gripper");
-		grasObj.CloseGripper(0.25); // closing gripper
-		sleep(1.0);
+			while (!graspObj.ExecuteGrasp() && !ros::isShuttingDown())
+			{
+				//wait
+				loop_rate.sleep();
+			}
+			if (ros::isShuttingDown())
+			{
+				break;
+			}
 
-		//grasObj.AttachGripper(); // Attaching object
-		ROS_INFO("Attaching objects");
+			ROS_INFO("Grasp server active");
+			geometry_msgs::Pose tag_pose;
+			tag_pose = graspObj.getTarget(); // Target the tag position
+			ROS_INFO
+			(
+				"Tag location:\n x:%lf \n y:%lf \n z:%lf",
+				tag_pose.position.x,
+				tag_pose.position.y,
+				tag_pose.position.z
+			);
 
-		temp_pose.position.z += 0.2; //raising cube in the air
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
-		arm.plan(my_plan); // check if plan succeded
-		arm.move();
+			// --------------------------
+			// Setup for grasping the tag
+			// --------------------------
+			tag_pose.position.z += 0.25; //offset by .25 meters in the z axis
+			tag_pose.position.x -= 0.05;
+			tag_pose.position.y += 0.05;
+			tag_pose.orientation.w = 0.707;
+			tag_pose.orientation.x = 0.0;
+			tag_pose.orientation.y = 0.707;
+			tag_pose.orientation.z = 0.0; // and pointed straight down
+			arm.setPoseTarget(tag_pose, arm.getEndEffectorLink().c_str());
+			if (arm.plan(my_plan) != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If the plan fails, stop here and wait for new call.
+				ROS_ERROR(
+					"MoveIt wasn't able to make a plan to the Tag!"
+				);
+				graspObj.setSuccess(false);
+				continue;
+			}
+			if (arm.move() != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If the execution fails, stop here and wait for new call.
+				ROS_ERROR(
+					"The arm wasn't able to move to the Tag!"
+				);
+				graspObj.setSuccess(false);
+				continue;
+			}
+			sleep(1.0); // Ensure it is definately stopped.
 
-		// moving object to next stand
+			// --------------------------
+			// Move down to tag and grasp
+			// --------------------------
+			/*************ADD SOME CODE HERE (START)**********
+			|
+			|
+			|
+			|
+			|
+			|
+			************ADD SOME CODE HERE (END)**************/
 
-		/*************ADD SOME CODE HERE (START)**********
-		|
-		|
-		|
-		|
-		|
-		|
-		************ADD SOME CODE HERE (END)**************/
+			sleep(1.0);
+			ROS_INFO("Closing Gripper");
+			graspObj.CloseGripper(0.25); // closing gripper
+			sleep(1.0);
 
-		sleep(1.0);
-		arm.setPoseTarget(temp_pose, arm.getEndEffectorLink().c_str());
-		arm.plan(my_plan); // check if plan succeded
-		arm.move();
-		sleep(1.0);
+			//graspObj.AttachGripper(); // Attaching object
+			ROS_INFO("Attaching objects");
 
-		ROS_INFO("Detaching Object");
-		grasObj.DetachGripper(); // Detaching object
-		grasObj.CloseGripper(0.0);
-		sleep(1);
+			// ------------------------------------------------
+			// Move tag away from surface and to next pedastool
+			// ------------------------------------------------
+			tag_pose.position.z += 0.2; //raising cube in the air
+			arm.setPoseTarget(tag_pose, arm.getEndEffectorLink().c_str());
+			if (arm.plan(my_plan) != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If the plan fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"MoveIt wasn't able to make a plan to lift the Tag.\n"
+					"The item will be dropped now, and you man need to restart "
+					"this simulation if the tag is unrecoverable"
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			if (arm.move() != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If execution fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"The arm wasn't able to lift the tag.\n"
+					"The item will be dropped now, and you man need to restart "
+					"this simulation if the tag is unrecoverable"
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			sleep(1.0);
 
-		ROS_INFO("Moving to Home");
-		arm.setNamedTarget("home");
-		arm.plan(my_plan);
-		arm.move();
-		ROS_INFO("finished motion plan");
-		grasObj.setSuccess(true);
+			/*************ADD SOME CODE HERE (START)**********
+			|
+			|
+			|
+			|
+			|
+			|
+			************ADD SOME CODE HERE (END)**************/
 
-		ros::spinOnce();
-		loop_rate.sleep();
+			// --------------------------------
+			// Releasing the Tag and going home
+			// --------------------------------
+			ROS_INFO("Detaching Object");
+			graspObj.DetachGripper(); // Detaching object
+			graspObj.CloseGripper(0.0);
+			sleep(1);
+
+			ROS_INFO("Moving to Home");
+			arm.setNamedTarget("home");
+			if (arm.plan(my_plan) != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If the plan fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"MoveIt wasn't able to make a plan to home."
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			if (arm.move() != moveit::core::MoveItErrorCode::SUCCESS)
+			{
+				// If execution fails, stop here and get them to restart everything.
+				ROS_ERROR(
+					"The arm wasn't able to make it home."
+				);
+				graspObj.DetachGripper();
+				graspObj.setSuccess(false);
+				continue;
+			}
+			sleep(1.0);
+			ROS_INFO("finished motion plan");
+			graspObj.setSuccess(true);
+
+			loop_rate.sleep();
+		}
 	}
 	return 0;
 }
