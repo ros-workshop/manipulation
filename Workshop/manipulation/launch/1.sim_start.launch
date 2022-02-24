@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find ur_gazebo)/launch/ur5.launch" />
+
+  <include file="$(find ur5_moveit_config)/launch/ur5_moveit_planning_execution.launch" />
+
+  <include file="$(find apriltags_gazebo)/launch/continuous_detection.launch" />
+ 
+  <node pkg="manipulation" type="transform_tag_location" name="transform_tag_location"  output="screen" />
+</launch>
