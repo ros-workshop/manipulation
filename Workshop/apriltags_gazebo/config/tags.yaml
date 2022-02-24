@@ -19,8 +19,8 @@
 #   ]
 standalone_tags:
   [
-   {id: 0,size: 0.05}
-   #{id: 1,size: 0.05}
+   {id: 0,size: 0.05},
+   {id: 1,size: 0.05}
   ]
 ##SET SIZE TO .16 WHEN WORKING IRL SET to 0.05 WHEN IN GAZEBO
 # ## Tag bundle definitions
